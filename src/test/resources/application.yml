@@ -1,0 +1,13 @@
+server:
+  port: 7900
+
+spring:
+  security:
+    openid:
+      enabled: true
+      claimed-identity-field-name: fff
+      filter-processes-url: 4444
+      return-to-url-parameters:
+        d : d
+      realm-mapping:
+        sdd : xx 
