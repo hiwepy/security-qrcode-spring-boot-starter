@@ -374,7 +374,7 @@
 		<spring-security-biz.version>1.0.0-SNAPSHOT</spring-security-biz.version>
 		<spring-boot-starter-arcface.version>1.0.0-SNAPSHOT</spring-boot-starter-arcface.version>
 		<spring-boot-starter-baiduapi.version>1.0.0-SNAPSHOT</spring-boot-starter-baiduapi.version>
-		<spring-boot-starter-opencv.version>1.0.0-SNAPSHOT</spring-boot-starter-opencv.version>
+		<zxing.version>3.4.0</zxing.version>
 	</properties>
 	
 	<dependencyManagement>
@@ -397,11 +397,17 @@
 				<artifactId>spring-boot-starter-baiduapi</artifactId>
 				<version>${spring-boot-starter-baiduapi.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.github.vindell/spring-boot-starter-opencv -->
+			<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
 			<dependency>
-				<groupId>com.github.vindell</groupId>
-				<artifactId>spring-boot-starter-opencv</artifactId>
-				<version>${spring-boot-starter-opencv.version}</version>
+			    <groupId>com.google.zxing</groupId>
+			    <artifactId>core</artifactId>
+			    <version>${zxing.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+			<dependency>
+			    <groupId>com.google.zxing</groupId>
+			    <artifactId>javase</artifactId>
+			    <version>${zxing.version}</version>
 			</dependency>
 			
 		</dependencies>
@@ -474,6 +480,17 @@
 		<dependency>
 			<groupId>com.github.vindell</groupId>
 			<artifactId>spring-boot-starter-security-biz</artifactId>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
 		</dependency>
 		
 	</dependencies>
