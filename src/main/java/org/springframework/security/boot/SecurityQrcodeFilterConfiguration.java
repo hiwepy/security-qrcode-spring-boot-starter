@@ -36,12 +36,12 @@ public class SecurityQrcodeFilterConfiguration {
 	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
-	    private final SecurityQrcodeProperties faceIDProperties;
+	    private final SecurityQrcodeProperties qrcodeProperties;
 	    
 	    private final AuthenticationManager authenticationManager;
 	    private final RememberMeServices rememberMeServices;
 	    
-	    private final QrcodeAuthenticationProvider faceIDAuthenticationProvider;
+	    private final QrcodeAuthenticationProvider qrcodeAuthenticationProvider;
 	    private final PostRequestAuthenticationSuccessHandler authenticationSuccessHandler;
 	    private final PostRequestAuthenticationFailureHandler authenticationFailureHandler;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
@@ -52,26 +52,26 @@ public class SecurityQrcodeFilterConfiguration {
    				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
    				
 				SecurityBizProperties bizProperties,
-				SecurityQrcodeProperties faceIDProperties,
-				ObjectProvider<QrcodeAuthenticationProvider> faceIDAuthenticationProvider,
+				SecurityQrcodeProperties qrcodeProperties,
+				ObjectProvider<QrcodeAuthenticationProvider> qrcodeAuthenticationProvider,
 				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
    				@Qualifier("jwtAuthenticationFailureHandler") ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
 			this.bizProperties = bizProperties;
-			this.faceIDProperties = faceIDProperties;
+			this.qrcodeProperties = qrcodeProperties;
 			
 			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
 			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
 			
-			this.faceIDAuthenticationProvider = faceIDAuthenticationProvider.getIfAvailable();
+			this.qrcodeAuthenticationProvider = qrcodeAuthenticationProvider.getIfAvailable();
 			this.authenticationSuccessHandler = authenticationSuccessHandler.getIfAvailable();
    			this.authenticationFailureHandler = authenticationFailureHandler.getIfAvailable();
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 		}
 
 		@Bean
-		public QrcodeAuthenticationProcessingFilter faceIDAuthenticationProcessingFilter() throws Exception {
+		public QrcodeAuthenticationProcessingFilter qrcodeAuthenticationProcessingFilter() throws Exception {
 	    	
 			QrcodeAuthenticationProcessingFilter authcFilter = new QrcodeAuthenticationProcessingFilter();
 
@@ -79,11 +79,11 @@ public class SecurityQrcodeFilterConfiguration {
 			authcFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
 			authcFilter.setAuthenticationManager(authenticationManager);
 			authcFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
-			authcFilter.setContinueChainBeforeSuccessfulAuthentication(faceIDProperties.getAuthc().isContinueChainBeforeSuccessfulAuthentication());
-			if (StringUtils.hasText(faceIDProperties.getAuthc().getLoginUrlPatterns())) {
-				authcFilter.setFilterProcessesUrl(faceIDProperties.getAuthc().getLoginUrlPatterns());
+			authcFilter.setContinueChainBeforeSuccessfulAuthentication(false);
+			if (StringUtils.hasText(qrcodeProperties.getAuthc().getLoginUrl())) {
+				authcFilter.setFilterProcessesUrl(qrcodeProperties.getAuthc().getLoginUrl());
 			}
-			authcFilter.setPostOnly(faceIDProperties.getAuthc().isPostOnly());
+			authcFilter.setPostOnly(qrcodeProperties.getAuthc().isPostOnly());
 			authcFilter.setRememberMeServices(rememberMeServices);
 			authcFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
 			
@@ -92,14 +92,12 @@ public class SecurityQrcodeFilterConfiguration {
 		
 	    @Override
 	    protected void configure(AuthenticationManagerBuilder auth) {
-	        auth.authenticationProvider(faceIDAuthenticationProvider);
+	        auth.authenticationProvider(qrcodeAuthenticationProvider);
 	    }
 		
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			
-			http.addFilterBefore(faceIDAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-			
+			http.addFilterBefore(qrcodeAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 		}
 
 	}

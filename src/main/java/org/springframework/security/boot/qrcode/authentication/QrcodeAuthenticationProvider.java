@@ -56,15 +56,15 @@ public class QrcodeAuthenticationProvider implements AuthenticationProvider {
 			throw new BadCredentialsException("No principal found in request.");
 		}
         
-        // load face info by face image
-        QrcodeInfo faceInfo = getFaceRecognitionProvider().loadFaceInfo(authentication);
-        if (faceInfo == null) {
+        // load Qrcode info by uuid
+        QrcodeInfo qrcodeInfo = getFaceRecognitionProvider().loadQrcodeInfo(authentication);
+        if (qrcodeInfo == null) {
 			logger.debug("No Qrcode info found by face image.");
 			throw new AuthenticationQrcodeNotFoundException("No face info found by face image.");
 		}
         
         // load user details by face info
-		UserDetails ud = getUserDetailsService().loadUserDetails(new QrcodeAuthenticationToken(faceInfo));
+		UserDetails ud = getUserDetailsService().loadUserDetails(new QrcodeAuthenticationToken(qrcodeInfo));
         // User Status Check
         getUserDetailsChecker().check(ud);
         

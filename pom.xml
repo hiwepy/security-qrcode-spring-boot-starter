@@ -371,10 +371,11 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.vertsion>2.22.1</maven-surefire-plugin.vertsion>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
+		<fastjson.version>1.2.60</fastjson.version>
 		<spring-security-biz.version>1.0.0-SNAPSHOT</spring-security-biz.version>
 		<spring-boot-starter-arcface.version>1.0.0-SNAPSHOT</spring-boot-starter-arcface.version>
 		<spring-boot-starter-baiduapi.version>1.0.0-SNAPSHOT</spring-boot-starter-baiduapi.version>
-		<zxing.version>3.4.0</zxing.version>
+		<spring-boot-starter-zxing.version>1.0.0-SNAPSHOT</spring-boot-starter-zxing.version>
 	</properties>
 	
 	<dependencyManagement>
@@ -397,19 +398,18 @@
 				<artifactId>spring-boot-starter-baiduapi</artifactId>
 				<version>${spring-boot-starter-baiduapi.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+			<!-- https://github.com/vindell/spring-boot-starter-zxing -->
 			<dependency>
-			    <groupId>com.google.zxing</groupId>
-			    <artifactId>core</artifactId>
-			    <version>${zxing.version}</version>
+				<groupId>com.github.vindell</groupId>
+				<artifactId>spring-boot-starter-zxing</artifactId>
+				<version>${spring-boot-starter-zxing.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+			<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
 			<dependency>
-			    <groupId>com.google.zxing</groupId>
-			    <artifactId>javase</artifactId>
-			    <version>${zxing.version}</version>
+			    <groupId>com.alibaba</groupId>
+			    <artifactId>fastjson</artifactId>
+			    <version>${fastjson.version}</version>
 			</dependency>
-			
 		</dependencies>
 	</dependencyManagement>
 	
@@ -481,16 +481,24 @@
 			<groupId>com.github.vindell</groupId>
 			<artifactId>spring-boot-starter-security-biz</artifactId>
 		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+		<!-- https://github.com/vindell/spring-boot-starter-zxing -->
 		<dependency>
-		    <groupId>com.google.zxing</groupId>
-		    <artifactId>core</artifactId>
+			<groupId>com.github.vindell</groupId>
+			<artifactId>spring-boot-starter-zxing</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		
+		<!-- For Spring Boot's Redis -->
 		<dependency>
-		    <groupId>com.google.zxing</groupId>
-		    <artifactId>javase</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
 		</dependency>
 		
 	</dependencies>

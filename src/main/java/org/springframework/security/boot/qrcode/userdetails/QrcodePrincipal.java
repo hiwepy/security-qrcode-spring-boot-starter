@@ -29,21 +29,9 @@ import org.springframework.security.core.GrantedAuthority;
 public class QrcodePrincipal extends SecurityPrincipal {
 
 	/**
-	 * 人脸识别数据ID
+	 * 二维码UUID
 	 */
-	protected String faceId;
-	/**
-	 * 人脸识别图片base64编码后的图片数据（图片的base64编码不包含图片头的，如data:image/jpg;base64,）
-	 */
-	protected String face;
-	/**
-	 * 人脸的类型：(LIVE:表示生活照;通常为手机、相机拍摄的人像图片、或从网络获取的人像图片等|IDCARD:表示身份证芯片照;二代身份证内置芯片中的人像照片|WATERMARK:表示带水印证件照;一般为带水印的小图，如公安网小图|CERT:表示证件照片;如拍摄的身份证、工卡、护照、学生证等证件图片); 默认LIVE
-	 */
-	protected String faceType;
-	/**
-	 * 人脸图片的唯一标识
-	 */
-	protected String faceToken;
+	protected String uuid;
 
 	public QrcodePrincipal(String username, String password, String... roles) {
 		super(username, password, roles);
@@ -59,36 +47,12 @@ public class QrcodePrincipal extends SecurityPrincipal {
 		super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 	}
 
-	public String getFaceId() {
-		return faceId;
+	public String getUuid() {
+		return uuid;
 	}
 
-	public void setFaceId(String faceId) {
-		this.faceId = faceId;
-	}
-
-	public String getFace() {
-		return face;
-	}
-
-	public void setFace(String face) {
-		this.face = face;
-	}
-
-	public String getFaceType() {
-		return faceType;
-	}
-
-	public void setFaceType(String faceType) {
-		this.faceType = faceType;
-	}
-
-	public String getFaceToken() {
-		return faceToken;
-	}
-
-	public void setFaceToken(String faceToken) {
-		this.faceToken = faceToken;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 }

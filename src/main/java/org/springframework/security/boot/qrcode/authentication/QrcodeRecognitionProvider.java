@@ -25,6 +25,6 @@ import org.springframework.security.core.Authentication;
 
 public interface QrcodeRecognitionProvider {
 
-	QrcodeInfo loadFaceInfo(Authentication authentication);
+	QrcodeInfo loadQrcodeInfo(Authentication authentication);
 	
 }
