@@ -373,8 +373,6 @@
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<fastjson.version>1.2.60</fastjson.version>
 		<spring-security-biz.version>1.0.0-SNAPSHOT</spring-security-biz.version>
-		<spring-boot-starter-arcface.version>1.0.0-SNAPSHOT</spring-boot-starter-arcface.version>
-		<spring-boot-starter-baiduapi.version>1.0.0-SNAPSHOT</spring-boot-starter-baiduapi.version>
 		<spring-boot-starter-zxing.version>1.0.0-SNAPSHOT</spring-boot-starter-zxing.version>
 	</properties>
 	
@@ -385,18 +383,6 @@
 				<groupId>com.github.vindell</groupId>
 				<artifactId>spring-boot-starter-security-biz</artifactId>
 				<version>${spring-security-biz.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.github.vindell/spring-boot-starter-arcface -->
-			<dependency>
-				<groupId>com.github.vindell</groupId>
-				<artifactId>spring-boot-starter-arcface</artifactId>
-				<version>${spring-boot-starter-arcface.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.github.vindell/spring-boot-starter-baiduapi -->
-			<dependency>
-				<groupId>com.github.vindell</groupId>
-				<artifactId>spring-boot-starter-baiduapi</artifactId>
-				<version>${spring-boot-starter-baiduapi.version}</version>
 			</dependency>
 			<!-- https://github.com/vindell/spring-boot-starter-zxing -->
 			<dependency>
