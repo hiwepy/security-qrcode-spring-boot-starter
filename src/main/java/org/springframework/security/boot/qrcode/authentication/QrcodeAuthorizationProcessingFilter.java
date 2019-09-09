@@ -94,6 +94,11 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
  
+		if (!requiresAuthentication(request, response)) {
+			chain.doFilter(request, response);
+			return;
+		}
+		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Request is to process authentication");
 		}
