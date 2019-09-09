@@ -372,6 +372,7 @@
         <maven-surefire-plugin.vertsion>2.22.1</maven-surefire-plugin.vertsion>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<fastjson.version>1.2.60</fastjson.version>
+		<jwt-issuer.version>1.0.4-SNAPSHOT</jwt-issuer.version>
 		<spring-security-biz.version>1.0.0-SNAPSHOT</spring-security-biz.version>
 		<spring-boot-starter-zxing.version>1.0.0-SNAPSHOT</spring-boot-starter-zxing.version>
 	</properties>
@@ -395,6 +396,23 @@
 			    <groupId>com.alibaba</groupId>
 			    <artifactId>fastjson</artifactId>
 			    <version>${fastjson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.vindell</groupId>
+				<artifactId>jwt-issuer-api</artifactId>
+				<version>${jwt-issuer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.vindell</groupId>
+				<artifactId>jwt-issuer-with-jjwt</artifactId>
+				<version>${jwt-issuer.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.vindell</groupId>
+				<artifactId>jwt-issuer-with-nimbus</artifactId>
+				<version>${jwt-issuer.version}</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -485,6 +503,21 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.github.vindell</groupId>
+			<artifactId>jwt-issuer-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.vindell</groupId>
+			<artifactId>jwt-issuer-with-jjwt</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.vindell</groupId>
+			<artifactId>jwt-issuer-with-nimbus</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		
 	</dependencies>

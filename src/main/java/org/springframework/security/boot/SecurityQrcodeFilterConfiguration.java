@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
-import org.springframework.security.boot.qrcode.authentication.QrcodeAuthenticationProcessingFilter;
-import org.springframework.security.boot.qrcode.authentication.QrcodeAuthenticationProvider;
+import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
+import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
+import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
+import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProvider;
 import org.springframework.security.boot.utils.StringUtils;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,6 +33,12 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityBizProperties.class, ServerProperties.class })
 public class SecurityQrcodeFilterConfiguration {
  
+	@Bean
+	public QrcodeAuthorizationProvider qrcodeAuthorizationProvider(JwtPayloadRepository payloadRepository,
+    		UserDetailsServiceAdapter userDetailsService) {
+		return new QrcodeAuthorizationProvider(payloadRepository, userDetailsService);
+	}
+	
 	@Configuration
 	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityBizProperties.class })
 	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -41,7 +49,7 @@ public class SecurityQrcodeFilterConfiguration {
 	    private final AuthenticationManager authenticationManager;
 	    private final RememberMeServices rememberMeServices;
 	    
-	    private final QrcodeAuthenticationProvider qrcodeAuthenticationProvider;
+	    private final QrcodeAuthorizationProvider qrcodeAuthorizationProvider;
 	    private final PostRequestAuthenticationSuccessHandler authenticationSuccessHandler;
 	    private final PostRequestAuthenticationFailureHandler authenticationFailureHandler;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
@@ -53,7 +61,7 @@ public class SecurityQrcodeFilterConfiguration {
    				
 				SecurityBizProperties bizProperties,
 				SecurityQrcodeProperties qrcodeProperties,
-				ObjectProvider<QrcodeAuthenticationProvider> qrcodeAuthenticationProvider,
+				ObjectProvider<QrcodeAuthorizationProvider> qrcodeAuthorizationProvider,
 				@Qualifier("qrcodeAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
    				@Qualifier("qrcodeAuthenticationFailureHandler") ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
@@ -64,16 +72,16 @@ public class SecurityQrcodeFilterConfiguration {
 			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
 			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
 			
-			this.qrcodeAuthenticationProvider = qrcodeAuthenticationProvider.getIfAvailable();
+			this.qrcodeAuthorizationProvider = qrcodeAuthorizationProvider.getIfAvailable();
 			this.authenticationSuccessHandler = authenticationSuccessHandler.getIfAvailable();
    			this.authenticationFailureHandler = authenticationFailureHandler.getIfAvailable();
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 		}
 
 		@Bean
-		public QrcodeAuthenticationProcessingFilter qrcodeAuthenticationProcessingFilter() throws Exception {
+		public QrcodeAuthorizationProcessingFilter qrcodeAuthorizationProcessingFilter() throws Exception {
 	    	
-			QrcodeAuthenticationProcessingFilter authcFilter = new QrcodeAuthenticationProcessingFilter();
+			QrcodeAuthorizationProcessingFilter authcFilter = new QrcodeAuthorizationProcessingFilter();
 
 			authcFilter.setAllowSessionCreation(bizProperties.getSessionMgt().isAllowSessionCreation());
 			authcFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
@@ -83,7 +91,6 @@ public class SecurityQrcodeFilterConfiguration {
 			if (StringUtils.hasText(qrcodeProperties.getAuthc().getLoginUrl())) {
 				authcFilter.setFilterProcessesUrl(qrcodeProperties.getAuthc().getLoginUrl());
 			}
-			authcFilter.setPostOnly(qrcodeProperties.getAuthc().isPostOnly());
 			authcFilter.setRememberMeServices(rememberMeServices);
 			authcFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
 			
@@ -92,12 +99,12 @@ public class SecurityQrcodeFilterConfiguration {
 		
 	    @Override
 	    protected void configure(AuthenticationManagerBuilder auth) {
-	        auth.authenticationProvider(qrcodeAuthenticationProvider);
+	        auth.authenticationProvider(qrcodeAuthorizationProvider);
 	    }
 		
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.addFilterBefore(qrcodeAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+			http.addFilterBefore(qrcodeAuthorizationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 		}
 
 	}

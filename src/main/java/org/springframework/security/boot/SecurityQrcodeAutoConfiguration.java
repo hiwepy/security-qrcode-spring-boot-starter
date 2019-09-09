@@ -16,12 +16,9 @@ import org.springframework.security.boot.biz.authentication.PostRequestAuthentic
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationSuccessHandler;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
-import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
-import org.springframework.security.boot.qrcode.authentication.QrcodeAuthenticationProvider;
 import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuthenticationEntryPoint;
 import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuthenticationFailureHandler;
 import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuthenticationSuccessHandler;
-import org.springframework.security.boot.qrcode.authentication.QrcodeRecognitionProvider;
 import org.springframework.security.boot.qrcode.endpoint.SecurityQrcodeEndpoint;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -86,12 +83,6 @@ public class SecurityQrcodeAutoConfiguration {
 	public QrcodeMatchedAuthenticationSuccessHandler qrcodeMatchedAuthenticationSuccessHandler(JwtPayloadRepository payloadRepository,
 			StringRedisTemplate stringRedisTemplate) {
 		return new QrcodeMatchedAuthenticationSuccessHandler(payloadRepository, stringRedisTemplate);
-	}
-
-	@Bean
-	public QrcodeAuthenticationProvider idcCodeAuthenticationProvider(QrcodeRecognitionProvider faceRecognitionProvider,
-			UserDetailsServiceAdapter userDetailsService) {
-		return new QrcodeAuthenticationProvider(faceRecognitionProvider, userDetailsService);
 	}
 
 	@Bean

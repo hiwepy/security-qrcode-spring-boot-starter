@@ -46,7 +46,7 @@ public class QrcodeMatchedAuthenticationSuccessHandler implements MatchedAuthent
 	
 	@Override
 	public boolean supports(Authentication authentication) {
-		return SubjectUtils.isAssignableFrom(authentication.getClass(), QrcodeAuthenticationToken.class);
+		return SubjectUtils.isAssignableFrom(authentication.getClass(), QrcodeAuthorizationToken.class);
 	}
 
     @Override
@@ -62,29 +62,29 @@ public class QrcodeMatchedAuthenticationSuccessHandler implements MatchedAuthent
 		// 账号首次登陆标记
 		if(QrcodePrincipal.class.isAssignableFrom(userDetails.getClass())) {
 			
-			QrcodePrincipal securityPrincipal = (QrcodePrincipal) userDetails;
+			QrcodePrincipal principal = (QrcodePrincipal) userDetails;
 			
 			Map<String, Object> tokenMap = new HashMap<String, Object>(rtMap);
 			
-			tokenMap.put("initial", securityPrincipal.isInitial());
-			tokenMap.put("alias", StringUtils.hasText(securityPrincipal.getAlias()) ? securityPrincipal.getAlias() : EMPTY);
-			tokenMap.put("usercode", StringUtils.hasText(securityPrincipal.getUsercode()) ? securityPrincipal.getUsercode() : EMPTY);
-			tokenMap.put("userkey", StringUtils.hasText(securityPrincipal.getUserkey()) ? securityPrincipal.getUserkey() : EMPTY);
-			tokenMap.put("userid", StringUtils.hasText(securityPrincipal.getUserid()) ? securityPrincipal.getUserid() : EMPTY);
-			tokenMap.put("roleid", StringUtils.hasText(securityPrincipal.getRoleid()) ? securityPrincipal.getRoleid() : EMPTY );
-			tokenMap.put("role", StringUtils.hasText(securityPrincipal.getRole()) ? securityPrincipal.getRole() : EMPTY);
-			tokenMap.put("roles", CollectionUtils.isEmpty(securityPrincipal.getRoles()) ? new ArrayList<>() : securityPrincipal.getRoles() );
-			tokenMap.put("restricted", securityPrincipal.isRestricted());
-			tokenMap.put("profile", CollectionUtils.isEmpty(securityPrincipal.getProfile()) ? new HashMap<>() : securityPrincipal.getProfile() );
-			tokenMap.put("faced", securityPrincipal.isFace());
-			tokenMap.put("faceId", StringUtils.hasText(securityPrincipal.getFaceId()) ? securityPrincipal.getFaceId() : EMPTY );
+			tokenMap.put("initial", principal.isInitial());
+			tokenMap.put("alias", StringUtils.hasText(principal.getAlias()) ? principal.getAlias() : EMPTY);
+			tokenMap.put("usercode", StringUtils.hasText(principal.getUsercode()) ? principal.getUsercode() : EMPTY);
+			tokenMap.put("userkey", StringUtils.hasText(principal.getUserkey()) ? principal.getUserkey() : EMPTY);
+			tokenMap.put("userid", StringUtils.hasText(principal.getUserid()) ? principal.getUserid() : EMPTY);
+			tokenMap.put("roleid", StringUtils.hasText(principal.getRoleid()) ? principal.getRoleid() : EMPTY );
+			tokenMap.put("role", StringUtils.hasText(principal.getRole()) ? principal.getRole() : EMPTY);
+			tokenMap.put("roles", CollectionUtils.isEmpty(principal.getRoles()) ? new ArrayList<>() : principal.getRoles() );
+			tokenMap.put("restricted", principal.isRestricted());
+			tokenMap.put("profile", CollectionUtils.isEmpty(principal.getProfile()) ? new HashMap<>() : principal.getProfile() );
+			tokenMap.put("faced", principal.isFace());
+			tokenMap.put("faceId", StringUtils.hasText(principal.getFaceId()) ? principal.getFaceId() : EMPTY );
 			
 			tokenMap.put("perms", userDetails.getAuthorities());
 			tokenMap.put("token", getPayloadRepository().issueJwt((AbstractAuthenticationToken) authentication));
 			tokenMap.put("username", userDetails.getUsername());
 			
 			// 设置UUID对应的登录信息
-			getStringRedisTemplate().opsForValue().set(String.format("login-%s", securityPrincipal.getUuid()), JSONObject.toJSONString(tokenMap), Duration.ofMinutes(1));
+			getStringRedisTemplate().opsForValue().set(String.format("login-%s", principal.getUuid()), JSONObject.toJSONString(tokenMap), Duration.ofMinutes(1));
 			
 		}
 		
