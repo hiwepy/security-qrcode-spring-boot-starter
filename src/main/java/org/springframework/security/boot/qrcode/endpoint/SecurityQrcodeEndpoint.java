@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "二维码扫描登录")
+@Api(tags = "认证授权：二维码扫码登录")
 @RestController
 @RequestMapping("/authz/qrcode/")
 public class SecurityQrcodeEndpoint {
