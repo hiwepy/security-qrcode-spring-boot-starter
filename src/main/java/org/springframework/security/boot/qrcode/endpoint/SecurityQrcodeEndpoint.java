@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -117,6 +116,10 @@ public class SecurityQrcodeEndpoint {
 			// 数据已经和用户信息关联
 			rtMap.put("info", JSONObject.parseObject(value));
 			rtMap.put("status", STATUS_BOUND);
+			
+			// 扫码完成，清除缓存
+			getStringRedisTemplate().delete(key);
+			
 			return ResponseEntity.ok(rtMap);
 			
 		} catch (Exception e) {
