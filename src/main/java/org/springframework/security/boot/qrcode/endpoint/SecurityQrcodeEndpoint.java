@@ -79,7 +79,7 @@ public class SecurityQrcodeEndpoint {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "uuid", required = true, value = "二维码对应的UUID", dataType = "String"),
 	})
-	@PostMapping("bind")
+	@GetMapping("bind")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> bind(@RequestParam String uuid) {
 		
