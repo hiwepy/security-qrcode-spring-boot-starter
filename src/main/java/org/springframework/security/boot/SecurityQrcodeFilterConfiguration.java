@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
@@ -41,6 +42,7 @@ public class SecurityQrcodeFilterConfiguration {
 	
 	@Configuration
 	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityBizProperties.class })
+	@Order(108)
 	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
