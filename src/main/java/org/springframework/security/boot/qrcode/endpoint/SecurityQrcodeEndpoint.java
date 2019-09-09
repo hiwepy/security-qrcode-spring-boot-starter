@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.beust.jcommander.internal.Maps;
 import com.google.zxing.spring.boot.ZxingQrCodeTemplate;
 
-@RestController("/authz/qrcode/")
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+@Api(tags = "二维码扫描登录")
+@RestController
+@RequestMapping("/authz/qrcode/")
 public class SecurityQrcodeEndpoint {
 	
 	private static final String STATUS_BOUND = "bound";
@@ -40,6 +48,7 @@ public class SecurityQrcodeEndpoint {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value = "获取二维码", notes = "前端点击二维码登录时，访问该接口获取二维码数据并在界面展示")
 	@GetMapping("info")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> qrcode() {
@@ -66,6 +75,10 @@ public class SecurityQrcodeEndpoint {
 		}
 	}
 	
+	@ApiOperation(value = "获取登录信息", notes = "定时轮训查询二维码绑定的登录信息接口（建议 3-5秒 查询一次）")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "uuid", required = true, value = "登录账户", dataType = "String"),
+	})
 	@PostMapping("bind")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> bind(@RequestParam String uuid) {
