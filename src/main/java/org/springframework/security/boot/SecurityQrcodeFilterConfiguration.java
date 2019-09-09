@@ -54,8 +54,8 @@ public class SecurityQrcodeFilterConfiguration {
 				SecurityBizProperties bizProperties,
 				SecurityQrcodeProperties qrcodeProperties,
 				ObjectProvider<QrcodeAuthenticationProvider> qrcodeAuthenticationProvider,
-				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
-   				@Qualifier("jwtAuthenticationFailureHandler") ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
+				@Qualifier("qrcodeAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
+   				@Qualifier("qrcodeAuthenticationFailureHandler") ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
 			this.bizProperties = bizProperties;
