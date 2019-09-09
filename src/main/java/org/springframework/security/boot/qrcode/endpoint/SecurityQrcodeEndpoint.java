@@ -77,7 +77,7 @@ public class SecurityQrcodeEndpoint {
 	
 	@ApiOperation(value = "获取登录信息", notes = "定时轮训查询二维码绑定的登录信息接口（建议 3-5秒 查询一次）")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "uuid", required = true, value = "登录账户", dataType = "String"),
+		@ApiImplicitParam(name = "uuid", required = true, value = "二维码对应的UUID", dataType = "String"),
 	})
 	@PostMapping("bind")
 	@ResponseBody
