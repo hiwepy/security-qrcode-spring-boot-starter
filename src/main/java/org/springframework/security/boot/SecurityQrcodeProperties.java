@@ -2,7 +2,7 @@ package org.springframework.security.boot;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.security.boot.qrcode.SecurityQrcodeAuthcProperties;
+import org.springframework.security.boot.qrcode.SecurityQrcodeAuthzProperties;
 
 @ConfigurationProperties(prefix = SecurityQrcodeProperties.PREFIX)
 public class SecurityQrcodeProperties {
@@ -12,7 +12,7 @@ public class SecurityQrcodeProperties {
 	/** Whether Enable QrCode Authentication. */
 	private boolean enabled = false;
 	@NestedConfigurationProperty
-	private SecurityQrcodeAuthcProperties authc = new SecurityQrcodeAuthcProperties();
+	private SecurityQrcodeAuthzProperties authz = new SecurityQrcodeAuthzProperties();
 
 	public boolean isEnabled() {
 		return enabled;
@@ -22,12 +22,12 @@ public class SecurityQrcodeProperties {
 		this.enabled = enabled;
 	}
 
-	public SecurityQrcodeAuthcProperties getAuthc() {
-		return authc;
+	public SecurityQrcodeAuthzProperties getAuthz() {
+		return authz;
 	}
 
-	public void setAuthc(SecurityQrcodeAuthcProperties authc) {
-		this.authc = authc;
+	public void setAuthz(SecurityQrcodeAuthzProperties authz) {
+		this.authz = authz;
 	}
 
 }

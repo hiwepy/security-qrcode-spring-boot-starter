@@ -15,27 +15,27 @@
  */
 package org.springframework.security.boot.qrcode;
 
+import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
+
 import lombok.Data;
 
 @Data
-public class SecurityQrcodeAuthcProperties {
+public class SecurityQrcodeAuthzProperties {
 
 	public static final String PREFIX = "spring.security.qrcode";
 
-	/** 登录地址：会话不存在时访问的地址 */
-	private String loginUrl = "/authz/login/qrcode";
-	/** 重定向地址：会话注销后的重定向地址 */
-	private String redirectUrl = "/";
-	/** 系统主页：登录成功后跳转路径 */
-	private String successUrl = "/index";;
-	/** 未授权页面：无权限时的跳转路径 */
-	private String unauthorizedUrl = "/error";
-	/** 异常页面：认证失败时的跳转路径 */
-	private String failureUrl = "/error";
+	/** Authorization Path Pattern */
+	private String pathPattern = "/authz/login/qrcode";
+	private String[] ignorePatterns = new String[] {"/login/jwt"};
 	
+	/**
+	 * Specifies the name of the header on where to find the token (i.e.
+	 * X-Authorization).
+	 */
+	private String authorizationHeaderName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_HEADER;
+	private String authorizationParamName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_PARAM;
+	private String authorizationCookieName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_PARAM;
+	private String qrcodeParamName = QrcodeAuthorizationProcessingFilter.QRCODE_PARAM;
 	private boolean useReferer = false;
-	private boolean postOnly = true;
-	private boolean forceHttps = false;
-	private boolean useForward = false;
 
 }
