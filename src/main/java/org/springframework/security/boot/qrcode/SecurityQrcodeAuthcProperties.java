@@ -15,28 +15,27 @@
  */
 package org.springframework.security.boot.qrcode;
 
+import lombok.Data;
+
+@Data
 public class SecurityQrcodeAuthcProperties {
 
 	public static final String PREFIX = "spring.security.qrcode";
 
 	/** 登录地址：会话不存在时访问的地址 */
-	private String loginUrl = "/authz/login/qrcode";;
-	private boolean postOnly = true;
+	private String loginUrl = "/authz/login/qrcode";
+	/** 重定向地址：会话注销后的重定向地址 */
+	private String redirectUrl = "/";
+	/** 系统主页：登录成功后跳转路径 */
+	private String successUrl = "/index";;
+	/** 未授权页面：无权限时的跳转路径 */
+	private String unauthorizedUrl = "/error";
+	/** 异常页面：认证失败时的跳转路径 */
+	private String failureUrl = "/error";
 	
-	public String getLoginUrl() {
-		return loginUrl;
-	}
-
-	public void setLoginUrl(String loginUrl) {
-		this.loginUrl = loginUrl;
-	}
-
-	public boolean isPostOnly() {
-		return postOnly;
-	}
-
-	public void setPostOnly(boolean postOnly) {
-		this.postOnly = postOnly;
-	}
+	private boolean useReferer = false;
+	private boolean postOnly = true;
+	private boolean forceHttps = false;
+	private boolean useForward = false;
 
 }

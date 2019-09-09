@@ -3,7 +3,6 @@ package org.springframework.security.boot;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,6 +21,7 @@ import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuth
 import org.springframework.security.boot.qrcode.authentication.QrcodeRecognitionProvider;
 import org.springframework.security.boot.qrcode.endpoint.SecurityQrcodeEndpoint;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.zxing.spring.boot.ZxingQrCodeTemplate;
 
@@ -36,42 +36,37 @@ public class SecurityQrcodeAutoConfiguration {
 	@Autowired
 	private SecurityQrcodeProperties qrcodeProperties;
 
-	
-	@Bean("jwtAuthenticationSuccessHandler")
-	public PostRequestAuthenticationSuccessHandler jwtAuthenticationSuccessHandler(
+	@Bean("qrcodeAuthenticationSuccessHandler")
+	public PostRequestAuthenticationSuccessHandler qrcodeAuthenticationSuccessHandler(
 			@Autowired(required = false) List<AuthenticationListener> authenticationListeners,
-			@Autowired(required = false) List<MatchedAuthenticationSuccessHandler> successHandlers) {
-		
+			@Autowired(required = false) List<MatchedAuthenticationSuccessHandler> successHandlers, 
+			RedirectStrategy redirectStrategy, 
+			RequestCache requestCache) {
 		PostRequestAuthenticationSuccessHandler successHandler = new PostRequestAuthenticationSuccessHandler(
 				authenticationListeners, successHandlers);
-		
-		//successHandler.setDefaultTargetUrl(qrcodeProperties.getAuthc().getSuccessUrl());
+		successHandler.setDefaultTargetUrl(qrcodeProperties.getAuthc().getSuccessUrl());
+		successHandler.setRedirectStrategy(redirectStrategy);
+		successHandler.setRequestCache(requestCache);
 		successHandler.setStateless(bizProperties.isStateless());
 		//successHandler.setTargetUrlParameter(qrcodeProperties.getAuthc().getTargetUrlParameter());
-		//successHandler.setUseReferer(qrcodeProperties.getAuthc().isUseReferer());
-		
+		successHandler.setUseReferer(qrcodeProperties.getAuthc().isUseReferer());
 		return successHandler;
 	}
 	
-	@Bean("jwtAuthenticationFailureHandler")
-	public PostRequestAuthenticationFailureHandler jwtAuthenticationFailureHandler(
+	@Bean("qrcodeAuthenticationFailureHandler")
+	public PostRequestAuthenticationFailureHandler qrcodeAuthenticationFailureHandler(
 			@Autowired(required = false) List<AuthenticationListener> authenticationListeners,
 			@Autowired(required = false) List<MatchedAuthenticationFailureHandler> failureHandlers, 
-			@Qualifier("jwtRedirectStrategy") RedirectStrategy redirectStrategy) {
-		
+			RedirectStrategy redirectStrategy) {
 		PostRequestAuthenticationFailureHandler failureHandler = new PostRequestAuthenticationFailureHandler(
 				authenticationListeners, failureHandlers);
-		
 		failureHandler.setAllowSessionCreation(bizProperties.getSessionMgt().isAllowSessionCreation());
-		//failureHandler.setDefaultFailureUrl(qrcodeProperties.getAuthc().getFailureUrl());
+		failureHandler.setDefaultFailureUrl(qrcodeProperties.getAuthc().getFailureUrl());
 		failureHandler.setRedirectStrategy(redirectStrategy);
 		failureHandler.setStateless(bizProperties.isStateless());
-		//failureHandler.setUseForward(qrcodeProperties.getAuthc().isUseForward());
-		
+		failureHandler.setUseForward(qrcodeProperties.getAuthc().isUseForward());
 		return failureHandler;
-		
 	}
-	
 	
 	@Bean
 	public QrcodeMatchedAuthenticationEntryPoint idcMatchedAuthenticationEntryPoint() {
