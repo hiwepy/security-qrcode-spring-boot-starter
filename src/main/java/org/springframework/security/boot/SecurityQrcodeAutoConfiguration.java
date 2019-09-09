@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,10 +15,12 @@ import org.springframework.security.boot.biz.authentication.PostRequestAuthentic
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationSuccessHandler;
+import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthenticationProvider;
 import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuthenticationEntryPoint;
 import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuthenticationFailureHandler;
+import org.springframework.security.boot.qrcode.authentication.QrcodeMatchedAuthenticationSuccessHandler;
 import org.springframework.security.boot.qrcode.authentication.QrcodeRecognitionProvider;
 import org.springframework.security.boot.qrcode.endpoint.SecurityQrcodeEndpoint;
 import org.springframework.security.web.RedirectStrategy;
@@ -69,13 +72,20 @@ public class SecurityQrcodeAutoConfiguration {
 	}
 	
 	@Bean
-	public QrcodeMatchedAuthenticationEntryPoint idcMatchedAuthenticationEntryPoint() {
+	public QrcodeMatchedAuthenticationEntryPoint qrcodeMatchedAuthenticationEntryPoint() {
 		return new QrcodeMatchedAuthenticationEntryPoint();
 	}
 
 	@Bean
-	public QrcodeMatchedAuthenticationFailureHandler idcMatchedAuthenticationFailureHandler() {
+	public QrcodeMatchedAuthenticationFailureHandler qrcodeMatchedAuthenticationFailureHandler() {
 		return new QrcodeMatchedAuthenticationFailureHandler();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	public QrcodeMatchedAuthenticationSuccessHandler qrcodeMatchedAuthenticationSuccessHandler(JwtPayloadRepository payloadRepository,
+			StringRedisTemplate stringRedisTemplate) {
+		return new QrcodeMatchedAuthenticationSuccessHandler(payloadRepository, stringRedisTemplate);
 	}
 
 	@Bean

@@ -51,7 +51,7 @@ public class SecurityQrcodeEndpoint {
 			// 生成UUID
 			String uuid = UUID.randomUUID().toString();
 			String qrcode = getQrcodeTemplate().qrcodeBase64(uuid);
-			// 每个老师的随机码都不相同 ： 打卡方式(1:定位打卡,2:刷脸打卡,3:数字打卡,4:二维码打卡,5:无感打卡)
+			// 初始化UUID对应的登录信息
 			getStringRedisTemplate().opsForValue().set(String.format("login-%s", uuid), STATUS_UNBIND, Duration.ofMinutes(1));
 			
 			rtMap.put("code", 0);
@@ -83,7 +83,7 @@ public class SecurityQrcodeEndpoint {
 				String new_uuid = UUID.randomUUID().toString();
 				String qrcode = getQrcodeTemplate().qrcodeBase64(new_uuid);
 				
-				// 每个老师的随机码都不相同 ： 打卡方式(1:定位打卡,2:刷脸打卡,3:数字打卡,4:二维码打卡,5:无感打卡)
+				// 初始化UUID对应的登录信息
 				getStringRedisTemplate().opsForValue().set(String.format("login-%s", new_uuid), STATUS_UNBIND, Duration.ofMinutes(1));
 				
 				rtMap.put("uuid", new_uuid);
