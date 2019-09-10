@@ -114,7 +114,7 @@ public class SecurityQrcodeEndpoint {
 			}
 			
 			// 数据已经和用户信息关联
-			rtMap.put("info", JSONObject.parseObject(value));
+			rtMap.put("data", JSONObject.parseObject(value));
 			rtMap.put("status", STATUS_BOUND);
 			
 			// 扫码完成，清除缓存
