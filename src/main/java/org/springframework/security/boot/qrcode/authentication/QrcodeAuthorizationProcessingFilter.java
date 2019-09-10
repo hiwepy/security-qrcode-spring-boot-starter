@@ -65,11 +65,11 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 	
 	public QrcodeAuthorizationProcessingFilter() {
-		super(new AntPathRequestMatcher("/authz/login/qrcode"));
+		super(new AntPathRequestMatcher("/login/qrcode"));
 	}
 	
 	public QrcodeAuthorizationProcessingFilter(List<String> ignorePatterns) {
-		super(new AntPathRequestMatcher("/authz/login/qrcode"));
+		super(new AntPathRequestMatcher("/login/qrcode"));
 		this.setIgnoreRequestMatcher(ignorePatterns);
 	}
 
