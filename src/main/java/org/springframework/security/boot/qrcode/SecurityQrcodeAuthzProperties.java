@@ -17,17 +17,12 @@ package org.springframework.security.boot.qrcode;
 
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
 
-import lombok.Data;
-
-@Data
 public class SecurityQrcodeAuthzProperties {
 
 	public static final String PREFIX = "spring.security.qrcode";
 
 	/** Authorization Path Pattern */
-	private String pathPattern = "/authz/login/qrcode";
-	private String[] ignorePatterns = new String[] {"/login/jwt"};
-	
+	private String pathPattern = "/login/qrcode";
 	/**
 	 * Specifies the name of the header on where to find the token (i.e.
 	 * X-Authorization).
@@ -35,7 +30,55 @@ public class SecurityQrcodeAuthzProperties {
 	private String authorizationHeaderName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_HEADER;
 	private String authorizationParamName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_PARAM;
 	private String authorizationCookieName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_PARAM;
-	private String qrcodeParamName = QrcodeAuthorizationProcessingFilter.QRCODE_PARAM;
+	private String qrcodeParamName = QrcodeAuthorizationProcessingFilter.QRCODE_UUID_PARAM;
 	private boolean useReferer = false;
+
+	public String getPathPattern() {
+		return pathPattern;
+	}
+
+	public void setPathPattern(String pathPattern) {
+		this.pathPattern = pathPattern;
+	}
+
+	public String getAuthorizationHeaderName() {
+		return authorizationHeaderName;
+	}
+
+	public void setAuthorizationHeaderName(String authorizationHeaderName) {
+		this.authorizationHeaderName = authorizationHeaderName;
+	}
+
+	public String getAuthorizationParamName() {
+		return authorizationParamName;
+	}
+
+	public void setAuthorizationParamName(String authorizationParamName) {
+		this.authorizationParamName = authorizationParamName;
+	}
+
+	public String getAuthorizationCookieName() {
+		return authorizationCookieName;
+	}
+
+	public void setAuthorizationCookieName(String authorizationCookieName) {
+		this.authorizationCookieName = authorizationCookieName;
+	}
+
+	public String getQrcodeParamName() {
+		return qrcodeParamName;
+	}
+
+	public void setQrcodeParamName(String qrcodeParamName) {
+		this.qrcodeParamName = qrcodeParamName;
+	}
+
+	public boolean isUseReferer() {
+		return useReferer;
+	}
+
+	public void setUseReferer(boolean useReferer) {
+		this.useReferer = useReferer;
+	}
 
 }

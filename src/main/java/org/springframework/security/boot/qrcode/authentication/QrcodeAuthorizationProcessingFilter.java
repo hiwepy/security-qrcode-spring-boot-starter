@@ -16,9 +16,6 @@
 package org.springframework.security.boot.qrcode.authentication;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -39,8 +36,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.CollectionUtils;
 
 /**
  * 二维码扫码登录授权 (authorization)过滤器
@@ -49,7 +44,7 @@ import org.springframework.util.CollectionUtils;
 public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
 	public static final String AUTHORIZATION_PARAM = "token";
-	public static final String QRCODE_PARAM = "qrcode";
+	public static final String QRCODE_UUID_PARAM = "uuid";
    
 	/**
 	 * HTTP Authorization header, equal to <code>Authorization</code>
@@ -59,8 +54,7 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
 	private String authorizationHeaderName = AUTHORIZATION_HEADER;
 	private String authorizationParamName = AUTHORIZATION_PARAM;
 	private String authorizationCookieName = AUTHORIZATION_PARAM;
-	private String qrcodeParameter = QRCODE_PARAM;
-	private List<RequestMatcher> ignoreRequestMatchers;
+	private String qrcodeParameter = QRCODE_UUID_PARAM;
 	
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 	
@@ -68,25 +62,6 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
 		super(new AntPathRequestMatcher("/login/qrcode"));
 	}
 	
-	public QrcodeAuthorizationProcessingFilter(List<String> ignorePatterns) {
-		super(new AntPathRequestMatcher("/login/qrcode"));
-		this.setIgnoreRequestMatcher(ignorePatterns);
-	}
-
-	@Override
-	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		// 忽略部分请求
-		if(!CollectionUtils.isEmpty(ignoreRequestMatchers)) {
-			for (RequestMatcher requestMatcher : ignoreRequestMatchers) {
-				if(requestMatcher.matches(request)) {
-					return false;
-				}
-			}
-		}
-		// 登录获取JWT的请求不拦截
-		return super.requiresAuthentication(request, response);
-	}
-
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
@@ -223,18 +198,6 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
         return request.getParameter(getQrcodeParameter());
     }
 	
-	public void setIgnoreRequestMatcher(List<String> ignorePatterns) {
-		if(!CollectionUtils.isEmpty(ignorePatterns)) {
-			this.ignoreRequestMatchers = ignorePatterns.stream().map(pattern -> {
-				return new AntPathRequestMatcher(pattern);
-			}).collect(Collectors.toList());
-		}
-	}
-	
-	public void setIgnoreRequestMatchers(RequestMatcher ...ignoreRequestMatchers) {
-		this.ignoreRequestMatchers = Arrays.asList(ignoreRequestMatchers);
-	}
-
 	public String getAuthorizationHeaderName() {
 		return authorizationHeaderName;
 	}
@@ -265,14 +228,6 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
 
 	public void setQrcodeParameter(String qrcodeParameter) {
 		this.qrcodeParameter = qrcodeParameter;
-	}
-
-	public List<RequestMatcher> getIgnoreRequestMatchers() {
-		return ignoreRequestMatchers;
-	}
-
-	public void setIgnoreRequestMatchers(List<RequestMatcher> ignoreRequestMatchers) {
-		this.ignoreRequestMatchers = ignoreRequestMatchers;
 	}
 
 	public SessionAuthenticationStrategy getSessionStrategy() {

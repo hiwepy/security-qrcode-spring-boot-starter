@@ -1,10 +1,5 @@
 package org.springframework.security.boot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
@@ -30,7 +24,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.util.CollectionUtils;
 
 @Configuration
 @AutoConfigureBefore(name = { 
@@ -104,22 +97,6 @@ public class SecurityQrcodeFilterConfiguration {
 			authzFilter.setAuthorizationCookieName(qrcodeProperties.getAuthz().getAuthorizationCookieName());
 			authzFilter.setAuthorizationHeaderName(qrcodeProperties.getAuthz().getAuthorizationHeaderName());
 			authzFilter.setAuthorizationParamName(qrcodeProperties.getAuthz().getAuthorizationParamName());
-			
-			// 对过滤链按过滤器名称进行分组
-			List<Entry<String, String>> noneEntries = bizProperties.getFilterChainDefinitionMap().entrySet().stream()
-					.filter(predicate -> {
-						return "anon".equalsIgnoreCase(predicate.getValue());
-					}).collect(Collectors.toList());
-   			
-   			List<String> ignorePatterns = new ArrayList<String>();
-   			if (!CollectionUtils.isEmpty(noneEntries)) {
-   				ignorePatterns = noneEntries.stream().map(mapper -> {
-   					return mapper.getKey();
-   				}).collect(Collectors.toList());
-   			}
-   			// 登录地址不拦截 
-   			ignorePatterns.add(qrcodeProperties.getAuthz().getPathPattern());
-			authzFilter.setIgnoreRequestMatcher(ignorePatterns);
 			authzFilter.setRememberMeServices(rememberMeServices);
 			authzFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
 			
@@ -138,9 +115,7 @@ public class SecurityQrcodeFilterConfiguration {
 		
 		@Override
    	    public void configure(WebSecurity web) throws Exception {
-   	    	web.ignoring()
-   	    		.antMatchers(qrcodeProperties.getAuthz().getPathPattern())
-   	    		.antMatchers(HttpMethod.OPTIONS, "/**");
+   	    	web.ignoring().antMatchers(qrcodeProperties.getAuthz().getPathPattern());
    	    }
 		
 	}
