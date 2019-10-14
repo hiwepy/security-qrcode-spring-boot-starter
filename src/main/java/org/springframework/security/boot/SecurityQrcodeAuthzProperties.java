@@ -13,13 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.springframework.security.boot.qrcode;
+package org.springframework.security.boot;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@ConfigurationProperties(prefix = SecurityQrcodeAuthzProperties.PREFIX)
+@Getter
+@Setter
+@ToString
 public class SecurityQrcodeAuthzProperties {
 
-	public static final String PREFIX = "spring.security.qrcode";
+	public static final String PREFIX = "spring.security.qrcode.authz";
 
 	/** Authorization Path Pattern */
 	private String pathPattern = "/login/qrcode";

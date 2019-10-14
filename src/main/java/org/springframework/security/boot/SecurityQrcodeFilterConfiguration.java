@@ -3,7 +3,7 @@ package org.springframework.security.boot;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +26,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 @Configuration
-@AutoConfigureBefore(name = { 
-	"org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration"
-})
-@ConditionalOnWebApplication
+@AutoConfigureBefore({ SecurityFilterAutoConfiguration.class })
 @ConditionalOnProperty(prefix = SecurityQrcodeProperties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityBizProperties.class, ServerProperties.class })
+@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, 
+	SecurityBizProperties.class, ServerProperties.class })
 public class SecurityQrcodeFilterConfiguration {
  
 	@Bean
@@ -41,12 +39,13 @@ public class SecurityQrcodeFilterConfiguration {
 	}
 	
 	@Configuration
-	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityBizProperties.class })
+	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, SecurityBizProperties.class })
 	@Order(108)
 	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
-	    private final SecurityQrcodeProperties qrcodeProperties;
+	    private final SecurityQrcodeAuthzProperties qrcodeAuthzProperties;
+	    
 	    
 	    private final AuthenticationManager authenticationManager;
 	    private final RememberMeServices rememberMeServices;
@@ -59,7 +58,7 @@ public class SecurityQrcodeFilterConfiguration {
 		public QrcodeWebSecurityConfigurerAdapter(
 				
 				SecurityBizProperties bizProperties,
-				SecurityQrcodeProperties qrcodeProperties,
+				SecurityQrcodeAuthzProperties qrcodeAuthzProperties,
 
 				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
 				ObjectProvider<PostRequestAuthenticationFailureHandler> authorizationFailureHandler,
@@ -71,7 +70,7 @@ public class SecurityQrcodeFilterConfiguration {
 			) {
 			
 			this.bizProperties = bizProperties;
-			this.qrcodeProperties = qrcodeProperties;
+			this.qrcodeAuthzProperties = qrcodeAuthzProperties;
 			
 			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
 			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
@@ -91,12 +90,12 @@ public class SecurityQrcodeFilterConfiguration {
 			authzFilter.setAuthenticationFailureHandler(authorizationFailureHandler);
 			authzFilter.setAuthenticationManager(authenticationManager);
 			authzFilter.setAuthenticationSuccessHandler(authorizationSuccessHandler);
-			if (StringUtils.hasText(qrcodeProperties.getAuthz().getPathPattern())) {
-				authzFilter.setFilterProcessesUrl(qrcodeProperties.getAuthz().getPathPattern());
+			if (StringUtils.hasText(qrcodeAuthzProperties.getPathPattern())) {
+				authzFilter.setFilterProcessesUrl(qrcodeAuthzProperties.getPathPattern());
 			}
-			authzFilter.setAuthorizationCookieName(qrcodeProperties.getAuthz().getAuthorizationCookieName());
-			authzFilter.setAuthorizationHeaderName(qrcodeProperties.getAuthz().getAuthorizationHeaderName());
-			authzFilter.setAuthorizationParamName(qrcodeProperties.getAuthz().getAuthorizationParamName());
+			authzFilter.setAuthorizationCookieName(qrcodeAuthzProperties.getAuthorizationCookieName());
+			authzFilter.setAuthorizationHeaderName(qrcodeAuthzProperties.getAuthorizationHeaderName());
+			authzFilter.setAuthorizationParamName(qrcodeAuthzProperties.getAuthorizationParamName());
 			authzFilter.setRememberMeServices(rememberMeServices);
 			authzFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
 			
@@ -115,7 +114,7 @@ public class SecurityQrcodeFilterConfiguration {
 		
 		@Override
    	    public void configure(WebSecurity web) throws Exception {
-   	    	web.ignoring().antMatchers(qrcodeProperties.getAuthz().getPathPattern());
+   	    	web.ignoring().antMatchers(qrcodeAuthzProperties.getPathPattern());
    	    }
 		
 	}
