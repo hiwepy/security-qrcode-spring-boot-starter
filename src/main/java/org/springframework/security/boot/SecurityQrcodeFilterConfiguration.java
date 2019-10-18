@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -16,7 +17,6 @@ import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapt
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProvider;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationSuccessHandler;
-import org.springframework.security.boot.utils.StringUtils;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -82,24 +82,30 @@ public class SecurityQrcodeFilterConfiguration {
 		}
 
 		@Bean
-		public QrcodeAuthorizationProcessingFilter qrcodeAuthorizationProcessingFilter() throws Exception {
+		public QrcodeAuthorizationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
-			QrcodeAuthorizationProcessingFilter authzFilter = new QrcodeAuthorizationProcessingFilter();
-
-			authzFilter.setAllowSessionCreation(bizProperties.getSessionMgt().isAllowSessionCreation());
-			authzFilter.setAuthenticationFailureHandler(authorizationFailureHandler);
-			authzFilter.setAuthenticationManager(authenticationManager);
-			authzFilter.setAuthenticationSuccessHandler(authorizationSuccessHandler);
-			if (StringUtils.hasText(qrcodeAuthzProperties.getPathPattern())) {
-				authzFilter.setFilterProcessesUrl(qrcodeAuthzProperties.getPathPattern());
-			}
-			authzFilter.setAuthorizationCookieName(qrcodeAuthzProperties.getAuthorizationCookieName());
-			authzFilter.setAuthorizationHeaderName(qrcodeAuthzProperties.getAuthorizationHeaderName());
-			authzFilter.setAuthorizationParamName(qrcodeAuthzProperties.getAuthorizationParamName());
-			authzFilter.setRememberMeServices(rememberMeServices);
-			authzFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+			QrcodeAuthorizationProcessingFilter authenticationFilter = new QrcodeAuthorizationProcessingFilter();
 			
-	        return authzFilter;
+			/**
+			 * 批量设置参数
+			 */
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			
+			map.from(bizProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
+			
+			map.from(authenticationManager).to(authenticationFilter::setAuthenticationManager);
+			map.from(authorizationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
+			map.from(authorizationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
+			
+			map.from(qrcodeAuthzProperties.getAuthorizationCookieName()).to(authenticationFilter::setAuthorizationCookieName);
+			map.from(qrcodeAuthzProperties.getAuthorizationHeaderName()).to(authenticationFilter::setAuthorizationHeaderName);
+			map.from(qrcodeAuthzProperties.getAuthorizationParamName()).to(authenticationFilter::setAuthorizationParamName);
+			
+			map.from(qrcodeAuthzProperties.getPathPattern()).to(authenticationFilter::setFilterProcessesUrl);
+			map.from(rememberMeServices).to(authenticationFilter::setRememberMeServices);
+			map.from(sessionAuthenticationStrategy).to(authenticationFilter::setSessionAuthenticationStrategy);
+			
+	        return authenticationFilter;
 	    }
 		
 	    @Override
@@ -109,7 +115,7 @@ public class SecurityQrcodeFilterConfiguration {
 		
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.addFilterBefore(qrcodeAuthorizationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+			http.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 		}
 		
 		@Override
