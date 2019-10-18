@@ -81,7 +81,6 @@ public class SecurityQrcodeFilterConfiguration {
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 		}
 
-		@Bean
 		public QrcodeAuthorizationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
 			QrcodeAuthorizationProcessingFilter authenticationFilter = new QrcodeAuthorizationProcessingFilter();
