@@ -108,18 +108,19 @@ public class SecurityQrcodeFilterConfiguration {
 	    }
 		
 	    @Override
-	    protected void configure(AuthenticationManagerBuilder auth) {
+		public void configure(AuthenticationManagerBuilder auth) {
 	        auth.authenticationProvider(qrcodeAuthorizationProvider);
 	    }
 		
 		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+		public void configure(HttpSecurity http) throws Exception {
+			http.antMatcher(qrcodeAuthzProperties.getPathPattern())
+				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 		}
 		
 		@Override
    	    public void configure(WebSecurity web) throws Exception {
-   	    	web.ignoring().antMatchers(qrcodeAuthzProperties.getPathPattern());
+   	    	//web.ignoring().antMatchers(qrcodeAuthzProperties.getPathPattern());
    	    }
 		
 	}
