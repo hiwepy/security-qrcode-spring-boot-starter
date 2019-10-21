@@ -20,7 +20,6 @@ import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizati
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -41,7 +40,7 @@ public class SecurityQrcodeFilterConfiguration {
 	@Configuration
 	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, SecurityBizProperties.class })
 	@Order(108)
-	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	static class QrcodeWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
 	    private final SecurityQrcodeAuthzProperties qrcodeAuthzProperties;
@@ -68,6 +67,8 @@ public class SecurityQrcodeFilterConfiguration {
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider
 				
 			) {
+			
+			super(bizProperties);
 			
 			this.bizProperties = bizProperties;
 			this.qrcodeAuthzProperties = qrcodeAuthzProperties;
@@ -108,19 +109,21 @@ public class SecurityQrcodeFilterConfiguration {
 	    }
 		
 	    @Override
-		public void configure(AuthenticationManagerBuilder auth) {
+		public void configure(AuthenticationManagerBuilder auth) throws Exception {
 	        auth.authenticationProvider(qrcodeAuthorizationProvider);
+	        super.configure(auth);
 	    }
 		
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			http.antMatcher(qrcodeAuthzProperties.getPathPattern())
 				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+			super.configure(http);
 		}
 		
 		@Override
    	    public void configure(WebSecurity web) throws Exception {
-   	    	//web.ignoring().antMatchers(qrcodeAuthzProperties.getPathPattern());
+   	    	super.configure(web);
    	    }
 		
 	}
