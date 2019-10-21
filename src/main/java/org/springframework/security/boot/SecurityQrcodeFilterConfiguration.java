@@ -1,5 +1,7 @@
 package org.springframework.security.boot;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
@@ -50,7 +53,7 @@ public class SecurityQrcodeFilterConfiguration {
 	    private final AuthenticationManager authenticationManager;
 	    private final RememberMeServices rememberMeServices;
 	    
-	    private final QrcodeAuthorizationProvider qrcodeAuthorizationProvider;
+	    private final QrcodeAuthorizationProvider authenticationProvider;
 	    private final QrcodeAuthorizationSuccessHandler authorizationSuccessHandler;
 	    private final PostRequestAuthenticationFailureHandler authorizationFailureHandler;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
@@ -77,12 +80,21 @@ public class SecurityQrcodeFilterConfiguration {
 			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
 			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
 			
-			this.qrcodeAuthorizationProvider = qrcodeAuthorizationProvider.getIfAvailable();
+			this.authenticationProvider = qrcodeAuthorizationProvider.getIfAvailable();
 			this.authorizationSuccessHandler = authorizationSuccessHandler.getIfAvailable();
    			this.authorizationFailureHandler = authorizationFailureHandler.getIfAvailable();
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 		}
 
+		@Override
+		public AuthenticationManager authenticationManagerBean() throws Exception {
+   			AuthenticationManager parentManager = authenticationManager == null ? super.authenticationManagerBean() : authenticationManager;
+			ProviderManager authenticationManager = new ProviderManager( Arrays.asList(authenticationProvider), parentManager);
+			// 不擦除认证密码，擦除会导致TokenBasedRememberMeServices因为找不到Credentials再调用UserDetailsService而抛出UsernameNotFoundException
+			authenticationManager.setEraseCredentialsAfterAuthentication(false);
+			return authenticationManager;
+		}
+		
 		public QrcodeAuthorizationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
 			QrcodeAuthorizationProcessingFilter authenticationFilter = new QrcodeAuthorizationProcessingFilter();
@@ -94,7 +106,7 @@ public class SecurityQrcodeFilterConfiguration {
 			
 			map.from(bizProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
 			
-			map.from(authenticationManager).to(authenticationFilter::setAuthenticationManager);
+			map.from(authenticationManagerBean()).to(authenticationFilter::setAuthenticationManager);
 			map.from(authorizationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
 			map.from(authorizationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
 			
@@ -111,7 +123,7 @@ public class SecurityQrcodeFilterConfiguration {
 		
 	    @Override
 		public void configure(AuthenticationManagerBuilder auth) throws Exception {
-	        auth.authenticationProvider(qrcodeAuthorizationProvider);
+	        auth.authenticationProvider(authenticationProvider);
 	        super.configure(auth);
 	    }
 		
