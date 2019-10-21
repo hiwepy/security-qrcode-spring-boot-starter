@@ -3,6 +3,7 @@ package org.springframework.security.boot;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,7 +40,7 @@ public class SecurityQrcodeFilterConfiguration {
 	
 	@Configuration
 	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, SecurityBizProperties.class })
-	@Order(108)
+	@Order(SecurityProperties.DEFAULT_FILTER_ORDER + 2)
 	static class QrcodeWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
