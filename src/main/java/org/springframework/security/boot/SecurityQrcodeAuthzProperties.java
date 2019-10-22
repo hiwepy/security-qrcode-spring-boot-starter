@@ -16,6 +16,7 @@
 package org.springframework.security.boot;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.boot.biz.property.SecurityAuthcProperties;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
 
 import lombok.Getter;
@@ -26,7 +27,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class SecurityQrcodeAuthzProperties {
+public class SecurityQrcodeAuthzProperties extends SecurityAuthcProperties {
 
 	public static final String PREFIX = "spring.security.qrcode.authz";
 
@@ -41,53 +42,5 @@ public class SecurityQrcodeAuthzProperties {
 	private String authorizationCookieName = QrcodeAuthorizationProcessingFilter.AUTHORIZATION_PARAM;
 	private String qrcodeParamName = QrcodeAuthorizationProcessingFilter.QRCODE_UUID_PARAM;
 	private boolean useReferer = false;
-
-	public String getPathPattern() {
-		return pathPattern;
-	}
-
-	public void setPathPattern(String pathPattern) {
-		this.pathPattern = pathPattern;
-	}
-
-	public String getAuthorizationHeaderName() {
-		return authorizationHeaderName;
-	}
-
-	public void setAuthorizationHeaderName(String authorizationHeaderName) {
-		this.authorizationHeaderName = authorizationHeaderName;
-	}
-
-	public String getAuthorizationParamName() {
-		return authorizationParamName;
-	}
-
-	public void setAuthorizationParamName(String authorizationParamName) {
-		this.authorizationParamName = authorizationParamName;
-	}
-
-	public String getAuthorizationCookieName() {
-		return authorizationCookieName;
-	}
-
-	public void setAuthorizationCookieName(String authorizationCookieName) {
-		this.authorizationCookieName = authorizationCookieName;
-	}
-
-	public String getQrcodeParamName() {
-		return qrcodeParamName;
-	}
-
-	public void setQrcodeParamName(String qrcodeParamName) {
-		this.qrcodeParamName = qrcodeParamName;
-	}
-
-	public boolean isUseReferer() {
-		return useReferer;
-	}
-
-	public void setUseReferer(boolean useReferer) {
-		this.useReferer = useReferer;
-	}
 
 }

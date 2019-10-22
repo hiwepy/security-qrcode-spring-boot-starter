@@ -1,6 +1,7 @@
 package org.springframework.security.boot;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -14,21 +15,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
+import org.springframework.security.boot.biz.authentication.AuthenticationListener;
+import org.springframework.security.boot.biz.authentication.captcha.CaptchaResolver;
+import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationEntryPoint;
+import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProvider;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationSuccessHandler;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.security.web.savedrequest.RequestCache;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @AutoConfigureBefore({ SecurityFilterAutoConfiguration.class })
@@ -48,57 +55,47 @@ public class SecurityQrcodeFilterConfiguration {
 	@Order(SecurityProperties.DEFAULT_FILTER_ORDER + 2)
 	static class QrcodeWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
 
-		private final SecurityBizProperties bizProperties;
-	    private final SecurityQrcodeAuthzProperties qrcodeAuthzProperties;
+	    private final SecurityQrcodeAuthzProperties authcProperties;
 	    
-	    
-	    private final AuthenticationManager authenticationManager;
-	    private final RememberMeServices rememberMeServices;
-	    
-	    private final QrcodeAuthorizationProvider authenticationProvider;
-	    private final QrcodeAuthorizationSuccessHandler authorizationSuccessHandler;
-	    private final PostRequestAuthenticationFailureHandler authorizationFailureHandler;
+	    private final AuthenticationEntryPoint authenticationEntryPoint;
+	    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+	    private final AuthenticationFailureHandler authenticationFailureHandler;
+    	private final RequestCache requestCache;
+    	private final RememberMeServices rememberMeServices;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
-	
+	    
 		public QrcodeWebSecurityConfigurerAdapter(
 				
 				SecurityBizProperties bizProperties,
-				SecurityQrcodeAuthzProperties qrcodeAuthzProperties,
+				SecurityQrcodeAuthzProperties authzProperties,
 
-				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
-				ObjectProvider<PostRequestAuthenticationFailureHandler> authorizationFailureHandler,
-				ObjectProvider<QrcodeAuthorizationProvider> qrcodeAuthorizationProvider,
-				ObjectProvider<QrcodeAuthorizationSuccessHandler> authorizationSuccessHandler,
-				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
-   				ObjectProvider<CorsConfigurationSource> configurationSourceProvider,
-				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
-				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider
+				ObjectProvider<QrcodeAuthorizationProvider> authenticationProvider,
+   				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
+   				ObjectProvider<AuthenticationListener> authenticationListenerProvider,
+   				ObjectProvider<MatchedAuthenticationEntryPoint> authenticationEntryPointProvider,
+   				ObjectProvider<QrcodeAuthorizationSuccessHandler> authenticationSuccessHandlerProvider,
+   				ObjectProvider<MatchedAuthenticationFailureHandler> authenticationFailureHandlerProvider,
+   				ObjectProvider<CaptchaResolver> captchaResolverProvider,
+   				ObjectProvider<LogoutHandler> logoutHandlerProvider,
+   				ObjectProvider<ObjectMapper> objectMapperProvider
 				
 			) {
 			
-			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable());
+			super(bizProperties, authzProperties, authenticationProvider.stream().collect(Collectors.toList()),
+					authenticationManagerProvider.getIfAvailable());
 			
-			this.bizProperties = bizProperties;
-			this.qrcodeAuthzProperties = qrcodeAuthzProperties;
+			this.authcProperties = authzProperties;
 			
-			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
-			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
-			
-			this.authenticationProvider = qrcodeAuthorizationProvider.getIfAvailable();
-			this.authorizationSuccessHandler = authorizationSuccessHandler.getIfAvailable();
-   			this.authorizationFailureHandler = authorizationFailureHandler.getIfAvailable();
-			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
+			List<AuthenticationListener> authenticationListeners = authenticationListenerProvider.stream().collect(Collectors.toList());
+   			this.authenticationEntryPoint = super.authenticationEntryPoint(authenticationEntryPointProvider.stream().collect(Collectors.toList()));
+   			this.authenticationSuccessHandler = authenticationSuccessHandlerProvider.getIfAvailable();
+   			this.authenticationFailureHandler = super.authenticationFailureHandler(authenticationListeners, authenticationFailureHandlerProvider.stream().collect(Collectors.toList()));
+   			this.requestCache = super.requestCache();
+   			this.rememberMeServices = super.rememberMeServices();
+   			this.sessionAuthenticationStrategy = super.sessionAuthenticationStrategy();
+   			
 		}
 
-		@Override
-		public AuthenticationManager authenticationManagerBean() throws Exception {
-   			AuthenticationManager parentManager = authenticationManager == null ? super.authenticationManagerBean() : authenticationManager;
-			ProviderManager authenticationManager = new ProviderManager( Arrays.asList(authenticationProvider), parentManager);
-			// 不擦除认证密码，擦除会导致TokenBasedRememberMeServices因为找不到Credentials再调用UserDetailsService而抛出UsernameNotFoundException
-			authenticationManager.setEraseCredentialsAfterAuthentication(false);
-			return authenticationManager;
-		}
-		
 		public QrcodeAuthorizationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
 			QrcodeAuthorizationProcessingFilter authenticationFilter = new QrcodeAuthorizationProcessingFilter();
@@ -108,34 +105,45 @@ public class SecurityQrcodeFilterConfiguration {
 			 */
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			
-			map.from(bizProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
+			map.from(authcProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
 			
 			map.from(authenticationManagerBean()).to(authenticationFilter::setAuthenticationManager);
-			map.from(authorizationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
-			map.from(authorizationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
+			map.from(authenticationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
+			map.from(authenticationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
 			
-			map.from(qrcodeAuthzProperties.getAuthorizationCookieName()).to(authenticationFilter::setAuthorizationCookieName);
-			map.from(qrcodeAuthzProperties.getAuthorizationHeaderName()).to(authenticationFilter::setAuthorizationHeaderName);
-			map.from(qrcodeAuthzProperties.getAuthorizationParamName()).to(authenticationFilter::setAuthorizationParamName);
+			map.from(authcProperties.getAuthorizationCookieName()).to(authenticationFilter::setAuthorizationCookieName);
+			map.from(authcProperties.getAuthorizationHeaderName()).to(authenticationFilter::setAuthorizationHeaderName);
+			map.from(authcProperties.getAuthorizationParamName()).to(authenticationFilter::setAuthorizationParamName);
 			
-			map.from(qrcodeAuthzProperties.getPathPattern()).to(authenticationFilter::setFilterProcessesUrl);
+			map.from(authcProperties.getPathPattern()).to(authenticationFilter::setFilterProcessesUrl);
 			map.from(rememberMeServices).to(authenticationFilter::setRememberMeServices);
 			map.from(sessionAuthenticationStrategy).to(authenticationFilter::setSessionAuthenticationStrategy);
 			
 	        return authenticationFilter;
 	    }
 		
-	    @Override
-		public void configure(AuthenticationManagerBuilder auth) throws Exception {
-	        auth.authenticationProvider(authenticationProvider);
-	        super.configure(auth);
-	    }
-		
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.antMatcher(qrcodeAuthzProperties.getPathPattern())
-				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-			super.configure(http);
+			
+   		    // Session 管理器配置
+   	    	http.requestCache()
+   	        	.requestCache(requestCache)
+   	        	// 异常处理
+   	        	.and()
+   	        	.exceptionHandling()
+   	        	.authenticationEntryPoint(authenticationEntryPoint)
+   	        	.and()
+   	        	.httpBasic()
+   	        	.authenticationEntryPoint(authenticationEntryPoint)
+   	        	.and()
+   	        	.antMatcher(authcProperties.getPathPattern())
+   	        	.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class); 
+
+   	    	super.configure(http, authcProperties.getCors());
+   	    	super.configure(http, authcProperties.getCsrf());
+   	    	super.configure(http, authcProperties.getHeaders());
+	    	super.configure(http);
+	    	
 		}
 		
 		@Override
