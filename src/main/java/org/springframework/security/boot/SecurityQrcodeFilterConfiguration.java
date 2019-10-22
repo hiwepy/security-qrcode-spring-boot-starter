@@ -76,7 +76,7 @@ public class SecurityQrcodeFilterConfiguration {
 				
 			) {
 			
-			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable(), configurationSourceProvider.getIfAvailable());
+			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable());
 			
 			this.bizProperties = bizProperties;
 			this.qrcodeAuthzProperties = qrcodeAuthzProperties;
