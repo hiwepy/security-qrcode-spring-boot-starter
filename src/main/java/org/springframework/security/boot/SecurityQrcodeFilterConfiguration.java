@@ -27,6 +27,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @AutoConfigureBefore({ SecurityFilterAutoConfiguration.class })
@@ -67,12 +69,14 @@ public class SecurityQrcodeFilterConfiguration {
 				ObjectProvider<PostRequestAuthenticationFailureHandler> authorizationFailureHandler,
 				ObjectProvider<QrcodeAuthorizationProvider> qrcodeAuthorizationProvider,
 				ObjectProvider<QrcodeAuthorizationSuccessHandler> authorizationSuccessHandler,
+				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
+   				ObjectProvider<CorsConfigurationSource> configurationSourceProvider,
 				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider
 				
 			) {
 			
-			super(bizProperties);
+			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable(), configurationSourceProvider.getIfAvailable());
 			
 			this.bizProperties = bizProperties;
 			this.qrcodeAuthzProperties = qrcodeAuthzProperties;
