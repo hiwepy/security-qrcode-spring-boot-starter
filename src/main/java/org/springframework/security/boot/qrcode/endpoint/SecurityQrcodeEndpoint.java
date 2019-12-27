@@ -43,7 +43,7 @@ public class SecurityQrcodeEndpoint {
 
 	/**
 	 * 前端点击二维码登录时，访问该接口获取二维码数据并在界面展示
-	 * @author 		： <a href="https://github.com/vindell">wandl</a>
+	 * @author 		： <a href="https://github.com/hiwepy">wandl</a>
 	 * @return
 	 * @throws Exception
 	 */

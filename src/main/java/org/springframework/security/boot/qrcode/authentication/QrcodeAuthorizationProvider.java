@@ -24,12 +24,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.util.Assert;
 
-import com.github.vindell.jwt.JwtPayload;
+import com.github.hiwepy.jwt.JwtPayload;
 
 /**
  * 
  * Jwt授权 (authorization)处理器
- * @author 		： <a href="https://github.com/vindell">wandl</a>
+ * @author 		： <a href="https://github.com/hiwepy">wandl</a>
  */
 public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 	
@@ -49,7 +49,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
     /**
      * 
      * <p>完成匹配Token的认证，这里返回的对象最终会通过：SecurityContextHolder.getContext().setAuthentication(authResult); 放置在上下文中</p>
-     * @author 		：<a href="https://github.com/vindell">wandl</a>
+     * @author 		：<a href="https://github.com/hiwepy">wandl</a>
      * @param authentication  {@link JwtAuthenticationToken} 对象
      * @return 认证结果{@link JwtAuthenticationToken}对象
      * @throws AuthenticationException 认证失败会抛出异常
