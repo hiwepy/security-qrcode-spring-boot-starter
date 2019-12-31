@@ -1,4 +1,4 @@
-# spring-boot-starter-security-qrcode
+# security-qrcode-spring-boot-starter
 
 ### 说明
 
@@ -8,7 +8,7 @@
 1. 依赖zxing 和 redis 服务
 2. 已经完成本地对接
 
-![](https://github.com/vindell/spring-boot-starter-security-qrcode/blob/master/二维码扫码登录流程.png)
+![](https://github.com/vindell/security-qrcode-spring-boot-starter/blob/master/二维码扫码登录流程.png)
 
 获取二维码
 /authz/qrcode/info
@@ -20,7 +20,7 @@
 ``` xml
 <dependency>
 	<groupId>${project.groupId}</groupId>
-	<artifactId>spring-boot-starter-security-qrcode</artifactId>
+	<artifactId>security-qrcode-spring-boot-starter</artifactId>
 	<version>${project.version}</version>
 </dependency>
 ```
