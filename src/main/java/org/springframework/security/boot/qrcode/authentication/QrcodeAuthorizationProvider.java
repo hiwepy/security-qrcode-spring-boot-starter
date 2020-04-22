@@ -37,7 +37,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final JwtPayloadRepository payloadRepository;
     private UserDetailsChecker userDetailsChecker = new AccountStatusUserDetailsChecker();
-    private boolean checkExpiry = true;
+    private boolean checkExpiry = false;
     private final UserDetailsServiceAdapter userDetailsService;
     
     public QrcodeAuthorizationProvider(final JwtPayloadRepository payloadRepository,
