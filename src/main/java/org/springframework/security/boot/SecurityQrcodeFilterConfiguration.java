@@ -53,7 +53,7 @@ public class SecurityQrcodeFilterConfiguration {
 	@Configuration
 	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, SecurityBizProperties.class })
 	@Order(SecurityProperties.DEFAULT_FILTER_ORDER + 2)
-	static class QrcodeWebSecurityConfigurerAdapter extends AbstractSecurityConfigurerAdapter {
+	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityBizConfigurerAdapter {
 
 	    private final SecurityQrcodeAuthzProperties authcProperties;
 	    
