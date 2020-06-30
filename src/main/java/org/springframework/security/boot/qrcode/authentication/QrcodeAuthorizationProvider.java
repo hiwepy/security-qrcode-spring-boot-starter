@@ -1,7 +1,6 @@
 package org.springframework.security.boot.qrcode.authentication;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,7 +90,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
         grantedAuthorities.add(grantedAuthority);
    		
    		// 用户权限标记集合
-   		List<String> perms = payload.getPerms();
+        Set<String> perms = payload.getPerms();
 		for (String perm : perms ) {
 			GrantedAuthority authority = new SimpleGrantedAuthority(perm);
             grantedAuthorities.add(authority);
