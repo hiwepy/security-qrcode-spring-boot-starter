@@ -18,8 +18,6 @@ package org.springframework.security.boot.qrcode.authentication;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -33,14 +31,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.boot.biz.SpringSecurityBizMessageSource;
-import org.springframework.security.boot.biz.exception.AuthResponseCode;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
+import org.springframework.security.boot.biz.userdetails.SecurityPrincipal;
 import org.springframework.security.boot.qrcode.userdetails.QrcodePrincipal;
+import org.springframework.security.boot.utils.SubjectUtils;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -64,40 +62,29 @@ public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessH
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		
-		QrcodePrincipal principal = (QrcodePrincipal) authentication.getPrincipal();
+
+    	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
     	
-		Map<String, Object> rtMap = new HashMap<String, Object>();
-		rtMap.put("code", AuthResponseCode.SC_AUTHC_SUCCESS.getCode());
-		rtMap.put("msg", messages.getMessage(AuthResponseCode.SC_AUTHC_SUCCESS.getMsgKey()));
-		
+		String tokenString = "";
 		// 账号首次登陆标记
-		Map<String, Object> tokenMap = new HashMap<String, Object>(rtMap);
-		
-		tokenMap.put("initial", principal.isInitial());
-		tokenMap.put("alias", StringUtils.hasText(principal.getAlias()) ? principal.getAlias() : EMPTY);
-		tokenMap.put("usercode", StringUtils.hasText(principal.getUsercode()) ? principal.getUsercode() : EMPTY);
-		tokenMap.put("userkey", StringUtils.hasText(principal.getUserkey()) ? principal.getUserkey() : EMPTY);
-		tokenMap.put("userid", StringUtils.hasText(principal.getUserid()) ? principal.getUserid() : EMPTY);
-		tokenMap.put("roleid", StringUtils.hasText(principal.getRoleid()) ? principal.getRoleid() : EMPTY );
-		tokenMap.put("role", StringUtils.hasText(principal.getRole()) ? principal.getRole() : EMPTY);
-		tokenMap.put("roles", CollectionUtils.isEmpty(principal.getRoles()) ? new ArrayList<>() : principal.getRoles() );
-		tokenMap.put("restricted", principal.isRestricted());
-		tokenMap.put("profile", CollectionUtils.isEmpty(principal.getProfile()) ? new HashMap<>() : principal.getProfile() );
-		tokenMap.put("faced", principal.isFace());
-		tokenMap.put("faceId", StringUtils.hasText(principal.getFaceId()) ? principal.getFaceId() : EMPTY );
-		
-		tokenMap.put("perms", principal.getAuthorities());
-		tokenMap.put("token", getPayloadRepository().issueJwt((AbstractAuthenticationToken) authentication));
-		tokenMap.put("username", principal.getUsername());
-		
-		// 设置UUID对应的登录信息
-		getStringRedisTemplate().opsForValue().set(String.format("login-%s", principal.getUuid()), JSONObject.toJSONString(tokenMap), Duration.ofMinutes(1));
-		
+    	if(SecurityPrincipal.class.isAssignableFrom(userDetails.getClass())) {
+			// JSON Web Token (JWT)
+			tokenString = getPayloadRepository().issueJwt((AbstractAuthenticationToken) authentication);
+		} 
+    	
+    	Map<String, Object> tokenMap = SubjectUtils.tokenMap(authentication, tokenString);
+    	
 		response.setStatus(HttpStatus.OK.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+			
+		JSONObject.writeJSONString(response.getWriter(), tokenMap);
 		
-		JSONObject.writeJSONString(response.getWriter(), rtMap);
+		if(QrcodePrincipal.class.isAssignableFrom(userDetails.getClass())) {
+			QrcodePrincipal principal = (QrcodePrincipal) userDetails;
+			// 设置UUID对应的登录信息
+			getStringRedisTemplate().opsForValue().set(String.format("login-%s", principal.getUuid()), JSONObject.toJSONString(tokenMap), Duration.ofMinutes(1));
+		}
 		
 		clearAuthenticationAttributes(request);
 				

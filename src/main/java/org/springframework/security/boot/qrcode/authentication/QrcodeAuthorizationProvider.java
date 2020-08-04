@@ -104,7 +104,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 		principal.setUserid(String.valueOf(claims.get("userid")));
 		principal.setUserkey(String.valueOf(claims.get("userkey")));
 		principal.setUsercode(String.valueOf(claims.get("usercode")));
-		principal.setAlias(payload.getAlias());
+		principal.setNickname(payload.getAlias());
 		principal.setPerms(new HashSet<String>(perms));
 		principal.setRoleid(payload.getRoleid());
 		principal.setRole(payload.getRole());
