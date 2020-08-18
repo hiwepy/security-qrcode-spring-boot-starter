@@ -25,12 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.boot.biz.SpringSecurityBizMessageSource;
+import org.springframework.security.boot.biz.exception.AuthResponse;
+import org.springframework.security.boot.biz.exception.AuthResponseCode;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 import org.springframework.security.boot.biz.userdetails.SecurityPrincipal;
 import org.springframework.security.boot.qrcode.userdetails.QrcodePrincipal;
@@ -51,7 +54,6 @@ public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessH
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
 	private final JwtPayloadRepository payloadRepository;
 	private final StringRedisTemplate stringRedisTemplate;
-	private final String EMPTY = "null";
 	
 	public QrcodeAuthorizationSuccessHandler(JwtPayloadRepository payloadRepository, StringRedisTemplate stringRedisTemplate) {
 		this.payloadRepository = payloadRepository;
@@ -73,18 +75,21 @@ public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessH
 		} 
     	
     	Map<String, Object> tokenMap = SubjectUtils.tokenMap(authentication, tokenString);
-    	
-		response.setStatus(HttpStatus.OK.value());
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-			
-		JSONObject.writeJSONString(response.getWriter(), tokenMap);
 		
 		if(QrcodePrincipal.class.isAssignableFrom(userDetails.getClass())) {
 			QrcodePrincipal principal = (QrcodePrincipal) userDetails;
 			// 设置UUID对应的登录信息
 			getStringRedisTemplate().opsForValue().set(String.format("login-%s", principal.getUuid()), JSONObject.toJSONString(tokenMap), Duration.ofMinutes(1));
 		}
+		
+		// 设置状态码和响应头
+		response.setStatus(HttpStatus.OK.value());
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		// 国际化后的异常信息
+		String message = messages.getMessage(AuthResponseCode.SC_AUTHC_SUCCESS.getMsgKey(), LocaleContextHolder.getLocale());
+		// 写出JSON
+		JSONObject.writeJSONString(response.getWriter(), AuthResponse.success(message, tokenMap));
 		
 		clearAuthenticationAttributes(request);
 				
