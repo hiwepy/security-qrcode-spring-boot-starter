@@ -16,13 +16,15 @@
 package org.springframework.security.boot.qrcode.exception;
 
 
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.boot.biz.exception.AuthResponseCode;
+import org.springframework.security.boot.biz.exception.AuthenticationExceptionAdapter;
 
 /**
  *
  */
 @SuppressWarnings("serial")
-public class AuthenticationQrcodeNotFoundException extends AuthenticationException {
+public class AuthenticationQrcodeNotFoundException extends AuthenticationExceptionAdapter {
+	
 	// ~ Constructors
 	// ===================================================================================================
 
@@ -33,7 +35,7 @@ public class AuthenticationQrcodeNotFoundException extends AuthenticationExcepti
 	 * @param msg the detail message
 	 */
 	public AuthenticationQrcodeNotFoundException(String msg) {
-		super(msg);
+		super(AuthResponseCode.SC_AUTHZ_CODE_REQUIRED, msg);
 	}
 
 	/**
@@ -44,6 +46,6 @@ public class AuthenticationQrcodeNotFoundException extends AuthenticationExcepti
 	 * @param t root cause
 	 */
 	public AuthenticationQrcodeNotFoundException(String msg, Throwable t) {
-		super(msg, t);
+		super(AuthResponseCode.SC_AUTHZ_CODE_REQUIRED, msg, t);
 	}
 }
