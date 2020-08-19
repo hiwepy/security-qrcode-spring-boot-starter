@@ -101,20 +101,16 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 				grantedAuthorities);
 		
 		Map<String, Object> claims = payload.getClaims();
-		principal.setUserid(String.valueOf(claims.get("userid")));
-		principal.setUserkey(String.valueOf(claims.get("userkey")));
-		principal.setUsercode(String.valueOf(claims.get("usercode")));
-		principal.setNickname(payload.getAlias());
+		
+		principal.setUid(String.valueOf(claims.get("userid")));
+		principal.setUkey(String.valueOf(claims.get("userkey")));
+		principal.setUcode(String.valueOf(claims.get("usercode")));
 		principal.setPerms(new HashSet<String>(perms));
-		principal.setRoleid(payload.getRoleid());
-		principal.setRole(payload.getRole());
+		principal.setRid(payload.getRoleid());
+		principal.setRkey(payload.getRole());
 		principal.setRoles(payload.getRoles());
 		principal.setInitial(payload.isInitial());
-		principal.setRestricted(payload.isRestricted());
 		principal.setProfile(payload.getProfile());
-		principal.setFace(payload.isFace());
-		principal.setFaceId(payload.getFaceid());
-		
 		principal.setUuid(uuid);
 		
         // User Status Check
