@@ -1,7 +1,6 @@
 package org.springframework.security.boot.qrcode.authentication;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -86,7 +85,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 		Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
 		
 		// 角色必须是ROLE_开头，可以在数据库中设置
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_"+ payload.getRole());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_"+ payload.getRkey());
         grantedAuthorities.add(grantedAuthority);
    		
    		// 用户权限标记集合
@@ -100,14 +99,13 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 				payload.isAccountNonExpired(), payload.isCredentialsNonExpired(), payload.isAccountNonLocked(),
 				grantedAuthorities);
 		
-		Map<String, Object> claims = payload.getClaims();
-		
-		principal.setUid(String.valueOf(claims.get("userid")));
-		principal.setUkey(String.valueOf(claims.get("userkey")));
-		principal.setUcode(String.valueOf(claims.get("usercode")));
+		principal.setUid(payload.getClientId());
+		principal.setUuid(payload.getUuid());
+		principal.setUkey(payload.getUkey());
+		principal.setUcode(payload.getUcode());
 		principal.setPerms(new HashSet<String>(perms));
-		principal.setRid(payload.getRoleid());
-		principal.setRkey(payload.getRole());
+		principal.setRid(payload.getRid());
+		principal.setRkey(payload.getRkey());
 		principal.setRoles(payload.getRoles());
 		principal.setInitial(payload.isInitial());
 		principal.setProfile(payload.getProfile());
