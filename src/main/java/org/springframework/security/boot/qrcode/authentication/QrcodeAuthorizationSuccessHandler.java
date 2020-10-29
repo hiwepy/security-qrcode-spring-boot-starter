@@ -76,7 +76,7 @@ public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessH
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 		// 国际化后的异常信息
-		String message = messages.getMessage(AuthResponseCode.SC_AUTHC_SUCCESS.getMsgKey());
+		String message = messages.getMessage(AuthResponseCode.SC_SUCCESS.getMsgKey());
 		// 写出JSON
 		JSONObject.writeJSONString(response.getWriter(), AuthResponse.success(message, profilePayload));
 		
