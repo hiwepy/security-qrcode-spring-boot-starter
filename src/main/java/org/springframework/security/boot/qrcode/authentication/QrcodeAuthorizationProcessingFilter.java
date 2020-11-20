@@ -27,12 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.boot.biz.authentication.PostOnlyAuthenticationProcessingFilter;
 import org.springframework.security.boot.biz.exception.AuthenticationTokenNotFoundException;
 import org.springframework.security.boot.qrcode.exception.AuthenticationQrcodeNotFoundException;
 import org.springframework.security.boot.utils.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -41,7 +41,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * 二维码扫码登录授权 (authorization)过滤器
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationProcessingFilter {
 
 	public static final String AUTHORIZATION_PARAM = "token";
 	public static final String QRCODE_UUID_PARAM = "uuid";
@@ -116,7 +116,7 @@ public class QrcodeAuthorizationProcessingFilter extends AbstractAuthenticationP
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+	public Authentication doAttemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
 
 
