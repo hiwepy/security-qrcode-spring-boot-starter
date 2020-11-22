@@ -42,10 +42,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import com.alibaba.fastjson.JSONObject;
 
-/**
- * TODO
- * @author 		： <a href="https://github.com/hiwepy">wandl</a>
- */
 public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessHandler {
 
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
@@ -84,7 +80,7 @@ public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessH
 				
 	}
 	
-	/**
+	/*
 	 * Removes temporary authentication-related data which may have been stored in the
 	 * session during the authentication process.
 	 */

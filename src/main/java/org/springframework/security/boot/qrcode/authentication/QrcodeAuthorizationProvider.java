@@ -46,10 +46,10 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 
     /**
      * 
-     * <p>完成匹配Token的认证，这里返回的对象最终会通过：SecurityContextHolder.getContext().setAuthentication(authResult); 放置在上下文中</p>
+     * 完成匹配Token的认证，这里返回的对象最终会通过：SecurityContextHolder.getContext().setAuthentication(authResult); 放置在上下文中
      * @author 		：<a href="https://github.com/hiwepy">wandl</a>
-     * @param authentication  {@link JwtAuthenticationToken} 对象
-     * @return 认证结果{@link JwtAuthenticationToken}对象
+     * @param authentication  {@link QrcodeAuthorizationToken} 对象
+     * @return 认证结果{@link QrcodeAuthorizationToken}对象
      * @throws AuthenticationException 认证失败会抛出异常
      */
     @Override

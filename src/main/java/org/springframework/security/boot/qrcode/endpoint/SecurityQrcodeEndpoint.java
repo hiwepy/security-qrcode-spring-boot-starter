@@ -41,11 +41,8 @@ public class SecurityQrcodeEndpoint {
 		this.qrcodeTemplate = qrcodeTemplate;
 	}
 
-	/**
+	/*
 	 * 前端点击二维码登录时，访问该接口获取二维码数据并在界面展示
-	 * @author 		： <a href="https://github.com/hiwepy">wandl</a>
-	 * @return
-	 * @throws Exception
 	 */
 	@ApiOperation(value = "获取二维码", notes = "前端点击二维码登录时，访问该接口获取二维码数据并在界面展示")
 	@GetMapping("info")
@@ -105,7 +102,6 @@ public class SecurityQrcodeEndpoint {
 				return ResponseEntity.ok(rtMap);
 			}
 			
-			// 每个老师的随机码都不相同 ： 打卡方式(1:定位打卡,2:刷脸打卡,3:数字打卡,4:二维码打卡,5:无感打卡)
 			String value = getStringRedisTemplate().opsForValue().get(key);
 			// 默认值表示移动端还未进行扫码
 			if(STATUS_UNBIND.equalsIgnoreCase(value)) {
