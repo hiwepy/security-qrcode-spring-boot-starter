@@ -19,7 +19,7 @@
 
 ``` xml
 <dependency>
-	<groupId>${project.groupId}</groupId>
+	<groupId>com.github.hiwepy</groupId>
 	<artifactId>security-qrcode-spring-boot-starter</artifactId>
 	<version>1.0.0.RELEASE</version>
 </dependency>
