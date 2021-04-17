@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.biz.web.servlet.i18n.LocaleContextFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -63,12 +64,14 @@ public class SecurityQrcodeFilterConfiguration {
     	private final RequestCache requestCache;
     	private final RememberMeServices rememberMeServices;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
+		private final LocaleContextFilter localeContextFilter;
 	    
 		public QrcodeWebSecurityConfigurerAdapter(
 				
 				SecurityBizProperties bizProperties,
 				SecurityQrcodeAuthzProperties authzProperties,
 
+				ObjectProvider<LocaleContextFilter> localeContextProvider,
 				ObjectProvider<QrcodeAuthorizationProvider> authenticationProvider,
    				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
    				ObjectProvider<AuthenticationListener> authenticationListenerProvider,
@@ -86,6 +89,7 @@ public class SecurityQrcodeFilterConfiguration {
 			
 			this.authcProperties = authzProperties;
 			
+			this.localeContextFilter = localeContextProvider.getIfAvailable();
 			List<AuthenticationListener> authenticationListeners = authenticationListenerProvider.stream().collect(Collectors.toList());
    			this.authenticationEntryPoint = super.authenticationEntryPoint(authenticationEntryPointProvider.stream().collect(Collectors.toList()));
    			this.authenticationSuccessHandler = authenticationSuccessHandlerProvider.getIfAvailable();
@@ -125,18 +129,16 @@ public class SecurityQrcodeFilterConfiguration {
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			
-   		    // Session 管理器配置
    	    	http.requestCache()
    	        	.requestCache(requestCache)
-   	        	// 异常处理
    	        	.and()
    	        	.exceptionHandling()
    	        	.authenticationEntryPoint(authenticationEntryPoint)
    	        	.and()
    	        	.httpBasic()
-   	        	.authenticationEntryPoint(authenticationEntryPoint)
-   	        	.and()
+   	        	.disable()
    	        	.antMatcher(authcProperties.getPathPattern())
+   	        	.addFilterBefore(localeContextFilter, UsernamePasswordAuthenticationFilter.class)
    	        	.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class); 
 
    	    	super.configure(http, authcProperties.getCors());
