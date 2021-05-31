@@ -20,6 +20,7 @@ import org.springframework.security.boot.biz.authentication.AuthenticationListen
 import org.springframework.security.boot.biz.authentication.captcha.CaptchaResolver;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationEntryPoint;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationFailureHandler;
+import org.springframework.security.boot.biz.property.SecuritySessionMgtProperties;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
@@ -69,6 +70,7 @@ public class SecurityQrcodeFilterConfiguration {
 		public QrcodeWebSecurityConfigurerAdapter(
 				
 				SecurityBizProperties bizProperties,
+				SecuritySessionMgtProperties sessionMgtProperties,
 				SecurityQrcodeAuthzProperties authzProperties,
 
 				ObjectProvider<LocaleContextFilter> localeContextProvider,
@@ -84,7 +86,7 @@ public class SecurityQrcodeFilterConfiguration {
 				
 			) {
 			
-			super(bizProperties, authzProperties, authenticationProvider.stream().collect(Collectors.toList()),
+			super(bizProperties, authzProperties, sessionMgtProperties, authenticationProvider.stream().collect(Collectors.toList()),
 					authenticationManagerProvider.getIfAvailable());
 			
 			this.authcProperties = authzProperties;
