@@ -53,7 +53,7 @@ public class SecurityQrcodeFilterConfiguration {
 	}
 	
 	@Configuration
-	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, SecurityBizProperties.class })
+	@EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class, SecurityBizProperties.class, SecuritySessionMgtProperties.class })
 	@Order(SecurityProperties.DEFAULT_FILTER_ORDER + 2)
 	static class QrcodeWebSecurityConfigurerAdapter extends WebSecurityBizConfigurerAdapter {
 
@@ -82,7 +82,8 @@ public class SecurityQrcodeFilterConfiguration {
    				ObjectProvider<MatchedAuthenticationFailureHandler> authenticationFailureHandlerProvider,
    				ObjectProvider<CaptchaResolver> captchaResolverProvider,
    				ObjectProvider<LogoutHandler> logoutHandlerProvider,
-   				ObjectProvider<ObjectMapper> objectMapperProvider
+   				ObjectProvider<ObjectMapper> objectMapperProvider,
+   				ObjectProvider<RememberMeServices> rememberMeServicesProvider
 				
 			) {
 			
@@ -97,7 +98,7 @@ public class SecurityQrcodeFilterConfiguration {
    			this.authenticationSuccessHandler = authenticationSuccessHandlerProvider.getIfAvailable();
    			this.authenticationFailureHandler = super.authenticationFailureHandler(authenticationListeners, authenticationFailureHandlerProvider.stream().collect(Collectors.toList()));
    			this.requestCache = super.requestCache();
-   			this.rememberMeServices = super.rememberMeServices();
+   			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
    			this.sessionAuthenticationStrategy = super.sessionAuthenticationStrategy();
    			
 		}
@@ -111,7 +112,7 @@ public class SecurityQrcodeFilterConfiguration {
 			 */
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			
-			map.from(authcProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
+			map.from(getSessionMgtProperties().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
 			
 			map.from(authenticationManagerBean()).to(authenticationFilter::setAuthenticationManager);
 			map.from(authenticationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
