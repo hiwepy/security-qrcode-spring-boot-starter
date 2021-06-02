@@ -30,19 +30,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.boot.biz.SpringSecurityBizMessageSource;
+import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationSuccessHandler;
 import org.springframework.security.boot.biz.exception.AuthResponse;
 import org.springframework.security.boot.biz.exception.AuthResponseCode;
 import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 import org.springframework.security.boot.biz.userdetails.UserProfilePayload;
 import org.springframework.security.boot.qrcode.userdetails.QrcodePrincipal;
+import org.springframework.security.boot.utils.SubjectUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.WebAttributes;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessHandler {
+public class QrcodeAuthorizationSuccessHandler implements MatchedAuthenticationSuccessHandler {
 
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
 	private final JwtPayloadRepository payloadRepository;
@@ -52,6 +53,11 @@ public class QrcodeAuthorizationSuccessHandler implements AuthenticationSuccessH
 	public QrcodeAuthorizationSuccessHandler(JwtPayloadRepository payloadRepository, StringRedisTemplate stringRedisTemplate) {
 		this.payloadRepository = payloadRepository;
 		this.stringRedisTemplate = stringRedisTemplate;
+	}
+	
+	@Override
+	public boolean supports(Authentication authentication) {
+		return SubjectUtils.isAssignableFrom(authentication.getClass(), QrcodeAuthorizationToken.class);
 	}
 	
 	@Override
