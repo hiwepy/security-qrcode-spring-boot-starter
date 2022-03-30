@@ -45,7 +45,7 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 
 	public static final String AUTHORIZATION_PARAM = "token";
 	public static final String QRCODE_UUID_PARAM = "uuid";
-   
+
 	/**
 	 * HTTP Authorization header, equal to <code>Authorization</code>
 	 */
@@ -55,25 +55,25 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 	private String authorizationParamName = AUTHORIZATION_PARAM;
 	private String authorizationCookieName = AUTHORIZATION_PARAM;
 	private String qrcodeParameter = QRCODE_UUID_PARAM;
-	
+
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
-	
+
 	public QrcodeAuthorizationProcessingFilter() {
 		super(new AntPathRequestMatcher("/login/qrcode"));
 	}
-	
+
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
- 
+
 		if (!requiresAuthentication(request, response)) {
 			chain.doFilter(request, response);
 			return;
 		}
-		
+
 		if (logger.isDebugEnabled()) {
 			logger.debug("Request is to process authentication");
 		}
@@ -103,11 +103,11 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 
 			return;
 		}
-		
+
 		successfulAuthentication(request, response, chain, authResult);
-		
+
 	}
-	
+
 	@Override
 	public void setSessionAuthenticationStrategy(
 			SessionAuthenticationStrategy sessionStrategy) {
@@ -125,14 +125,14 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
         if (uuid == null) {
         	uuid = "";
         }
-        
+
         uuid = uuid.trim();
-        
+
         if(!StringUtils.hasText(uuid)) {
 			logger.debug("Qrcode UUID not provided.");
 			throw new AuthenticationQrcodeNotFoundException("Qrcode UUID not provided.");
 		}
-        
+
 		String token = obtainToken(request);
 
 		if (token == null) {
@@ -140,7 +140,7 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 		}
 
 		token = token.trim();
-		
+
 		if(!StringUtils.hasText(token)) {
 			throw new AuthenticationTokenNotFoundException("JWT not provided");
 		}
@@ -149,7 +149,7 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 
 		// Allow subclasses to set the "details" property
 		setDetails(request, authRequest);
-        
+
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
 
@@ -161,15 +161,16 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 	 * @param authRequest the authentication request object that should have its details
 	 * set
 	 */
+	@Override
 	protected void setDetails(HttpServletRequest request,
-			AbstractAuthenticationToken authRequest) {
+							  AbstractAuthenticationToken authRequest) {
 		authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 	}
-	
+
 	protected AbstractAuthenticationToken authenticationToken(String token, String uuid) {
 		return new QrcodeAuthorizationToken( token, uuid );
 	}
-	
+
 	protected String obtainToken(HttpServletRequest request) {
 
 		// 从header中获取token
@@ -193,11 +194,11 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 		}
 		return token;
 	}
-	
+
 	protected String obtainUuid(HttpServletRequest request) {
         return request.getParameter(getQrcodeParameter());
     }
-	
+
 	public String getAuthorizationHeaderName() {
 		return authorizationHeaderName;
 	}

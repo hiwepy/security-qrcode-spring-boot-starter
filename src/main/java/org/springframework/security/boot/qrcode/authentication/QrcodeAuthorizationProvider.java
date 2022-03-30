@@ -25,19 +25,19 @@ import org.springframework.util.Assert;
 import com.github.hiwepy.jwt.JwtPayload;
 
 /**
- * 
+ *
  * Jwt授权 (authorization)处理器
  * @author 		： <a href="https://github.com/hiwepy">wandl</a>
  */
 public class QrcodeAuthorizationProvider implements AuthenticationProvider {
-	
+
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final JwtPayloadRepository payloadRepository;
     private UserDetailsChecker userDetailsChecker = new AccountStatusUserDetailsChecker();
     private boolean checkExpiry = false;
     private final UserDetailsServiceAdapter userDetailsService;
-    
+
     public QrcodeAuthorizationProvider(final JwtPayloadRepository payloadRepository,
     		final UserDetailsServiceAdapter userDetailsService) {
         this.payloadRepository = payloadRepository;
@@ -45,7 +45,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
     }
 
     /**
-     * 
+     *
      * 完成匹配Token的认证，这里返回的对象最终会通过：SecurityContextHolder.getContext().setAuthentication(authResult); 放置在上下文中
      * @author 		：<a href="https://github.com/hiwepy">wandl</a>
      * @param authentication  {@link QrcodeAuthorizationToken} 对象
@@ -54,52 +54,52 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        
+
     	Assert.notNull(authentication, "No authentication data provided");
-    	
+
     	if (logger.isDebugEnabled()) {
 			logger.debug("Processing authentication request : " + authentication);
 		}
- 
+
         String token = (String) authentication.getPrincipal();
 		if (!StringUtils.hasText(token)) {
 			logger.debug("No JWT found in request.");
 			throw new AuthenticationTokenNotFoundException("No JWT found in request.");
 		}
-		
+
 		String uuid = (String) authentication.getCredentials();
 		if (!StringUtils.hasText(uuid)) {
 			logger.debug("No Qrcode UUID found in request.");
 			throw new AuthenticationQrcodeNotFoundException("No Qrcode UUID found in request.");
 		}
-		
+
 		QrcodeAuthorizationToken authzToken = (QrcodeAuthorizationToken) authentication;
-		
+
 		// 解析Token载体信息
 		JwtPayload payload = getPayloadRepository().getPayload(authzToken, checkExpiry);
 		payload.setAccountNonExpired(true);
 		payload.setAccountNonLocked(true);
 		payload.setEnabled(true);
 		payload.setCredentialsNonExpired(true);
-		
+
 		Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
-		
+
 		// 角色必须是ROLE_开头，可以在数据库中设置
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_"+ payload.getRkey());
         grantedAuthorities.add(grantedAuthority);
-   		
+
    		// 用户权限标记集合
         Set<String> perms = payload.getPerms();
 		for (String perm : perms ) {
 			GrantedAuthority authority = new SimpleGrantedAuthority(perm);
             grantedAuthorities.add(authority);
 		}
-		
-		QrcodePrincipal principal = new QrcodePrincipal(payload.getClientId(), payload.getTokenId(), payload.isEnabled(),
+
+		QrcodePrincipal principal = new QrcodePrincipal(payload.getSubject(), payload.getTokenId(), payload.isEnabled(),
 				payload.isAccountNonExpired(), payload.isCredentialsNonExpired(), payload.isAccountNonLocked(),
 				grantedAuthorities);
-		
-		principal.setUid(payload.getClientId());
+
+		principal.setUid(payload.getSubject());
 		principal.setUuid(payload.getUuid());
 		principal.setUkey(payload.getUkey());
 		principal.setUcode(payload.getUcode());
@@ -110,13 +110,13 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 		principal.setInitial(payload.isInitial());
 		principal.setProfile(payload.getProfile());
 		principal.setUuid(uuid);
-		
+
         // User Status Check
         getUserDetailsChecker().check(principal);
-          
-        QrcodeAuthorizationToken authenticationToken = new QrcodeAuthorizationToken(principal, payload, principal.getAuthorities());        	
+
+        QrcodeAuthorizationToken authenticationToken = new QrcodeAuthorizationToken(principal, payload, principal.getAuthorities());
         authenticationToken.setDetails(authentication.getDetails());
-        
+
         return authenticationToken;
     }
 
@@ -124,11 +124,11 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return (QrcodeAuthorizationToken.class.isAssignableFrom(authentication));
     }
-    
+
 	public UserDetailsServiceAdapter getUserDetailsService() {
 		return userDetailsService;
 	}
-    
+
     public void setUserDetailsChecker(UserDetailsChecker userDetailsChecker) {
 		this.userDetailsChecker = userDetailsChecker;
 	}
@@ -148,5 +148,5 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 	public void setCheckExpiry(boolean checkExpiry) {
 		this.checkExpiry = checkExpiry;
 	}
-    
+
 }
