@@ -15,11 +15,15 @@
  */
 package org.springframework.security.boot;
 
+import com.google.zxing.spring.boot.ZxingQrCodeTemplate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.boot.biz.userdetails.JwtPayloadRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {{ @link SecurityQrcodeAutoConfiguration }}.
@@ -33,7 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("SecurityQrcodeAutoConfiguration Tests")
 class SecurityQrcodeAutoConfigurationTest {
 
-    private final ApplicationContextRunner runner = new ApplicationContextRunner();
+    private final ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withBean(JwtPayloadRepository.class, () -> mock(JwtPayloadRepository.class))
+            .withBean(StringRedisTemplate.class, () -> mock(StringRedisTemplate.class))
+            .withBean(ZxingQrCodeTemplate.class, () -> mock(ZxingQrCodeTemplate.class));
 
     @Test
     @DisplayName("Auto-configuration class can be instantiated")
