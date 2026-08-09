@@ -33,6 +33,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Authentication entry point for QR code authentication.
+ * <p>Returns appropriate error responses when QR code is not found or authentication fails.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class QrcodeMatchedAuthenticationEntryPoint implements MatchedAuthenticationEntryPoint {
 	
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();

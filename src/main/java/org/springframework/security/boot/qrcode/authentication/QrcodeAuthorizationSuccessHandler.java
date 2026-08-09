@@ -42,6 +42,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
+/**
+ * Success handler for QR code authorization.
+ * <p>Stores the authenticated user profile in Redis for the QR code UUID to be retrieved
+ * by the polling client.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class QrcodeAuthorizationSuccessHandler implements MatchedAuthenticationSuccessHandler {
 
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();

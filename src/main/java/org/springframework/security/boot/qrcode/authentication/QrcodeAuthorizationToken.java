@@ -21,6 +21,12 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 
 import java.util.Collection;
 
+/**
+ * Authentication token for QR code authorization.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class QrcodeAuthorizationToken extends AbstractAuthenticationToken {
     
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
