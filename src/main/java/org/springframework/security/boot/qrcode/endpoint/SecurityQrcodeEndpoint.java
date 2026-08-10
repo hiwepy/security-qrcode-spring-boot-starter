@@ -21,7 +21,7 @@ import java.util.UUID;
  * REST endpoint for QR code-based login authentication.
  * <p>Provides endpoints to generate QR codes and poll for login status.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Api(tags = "认证授权：二维码扫码登录")

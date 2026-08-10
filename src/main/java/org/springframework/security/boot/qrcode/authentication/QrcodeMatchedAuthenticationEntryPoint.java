@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets;
  * Authentication entry point for QR code authentication.
  * <p>Returns appropriate error responses when QR code is not found or authentication fails.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class QrcodeMatchedAuthenticationEntryPoint implements MatchedAuthenticationEntryPoint {

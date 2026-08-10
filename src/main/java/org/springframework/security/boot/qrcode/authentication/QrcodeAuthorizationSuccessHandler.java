@@ -47,7 +47,7 @@ import java.time.Duration;
  * <p>Stores the authenticated user profile in Redis for the QR code UUID to be retrieved
  * by the polling client.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class QrcodeAuthorizationSuccessHandler implements MatchedAuthenticationSuccessHandler {

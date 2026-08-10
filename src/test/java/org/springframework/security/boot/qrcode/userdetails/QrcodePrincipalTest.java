@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {{ @link QrcodePrincipal }}.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @DisplayName("QrcodePrincipal Tests")
