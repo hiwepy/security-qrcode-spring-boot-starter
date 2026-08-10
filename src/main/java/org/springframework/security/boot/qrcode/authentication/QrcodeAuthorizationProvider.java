@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  *
  * Jwt授权 (authorization)处理器
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 
@@ -46,7 +46,7 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
     /**
      *
      * 完成匹配Token的认证，这里返回的对象最终会通过：SecurityContextHolder.getContext().setAuthentication(authResult); 放置在上下文中
-     * @author [@Loong Wan](https://github.com/loong10k)
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @param authentication  {@link QrcodeAuthorizationToken} 对象
      * @return 认证结果{@link QrcodeAuthorizationToken}对象
      * @throws AuthenticationException 认证失败会抛出异常
