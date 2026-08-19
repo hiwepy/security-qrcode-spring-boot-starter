@@ -27,6 +27,7 @@ import java.util.Set;
  *
  * Jwt授权 (authorization)处理器
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public class QrcodeAuthorizationProvider implements AuthenticationProvider {
 
@@ -37,6 +38,12 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
     private boolean checkExpiry = false;
     private final UserDetailsServiceAdapter userDetailsService;
 
+    /**
+     * Constructs a new qrcode authorization provider instance.
+     *
+     * @param payloadRepository the payload repository
+     * @param userDetailsService the user details service
+     */
     public QrcodeAuthorizationProvider(final JwtPayloadRepository payloadRepository,
     		final UserDetailsServiceAdapter userDetailsService) {
         this.payloadRepository = payloadRepository;
@@ -119,31 +126,67 @@ public class QrcodeAuthorizationProvider implements AuthenticationProvider {
         return authenticationToken;
     }
 
+    /**
+     * Determines whether supports.
+     *
+     * @param authentication the authentication
+     * @return the result
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return (QrcodeAuthorizationToken.class.isAssignableFrom(authentication));
     }
 
+	/**
+	 * Returns the user details service.
+	 *
+	 * @return the user details service
+	 */
 	public UserDetailsServiceAdapter getUserDetailsService() {
 		return userDetailsService;
 	}
 
+    /**
+     * Sets the user details checker.
+     *
+     * @param userDetailsChecker the user details checker
+     */
     public void setUserDetailsChecker(UserDetailsChecker userDetailsChecker) {
 		this.userDetailsChecker = userDetailsChecker;
 	}
 
+	/**
+	 * Returns the user details checker.
+	 *
+	 * @return the user details checker
+	 */
 	public UserDetailsChecker getUserDetailsChecker() {
 		return userDetailsChecker;
 	}
 
+	/**
+	 * Returns the payload repository.
+	 *
+	 * @return the payload repository
+	 */
 	public JwtPayloadRepository getPayloadRepository() {
 		return payloadRepository;
 	}
 
+	/**
+	 * Returns the check expiry.
+	 *
+	 * @return the check expiry
+	 */
 	public boolean isCheckExpiry() {
 		return checkExpiry;
 	}
 
+	/**
+	 * Sets the check expiry.
+	 *
+	 * @param checkExpiry the check expiry
+	 */
 	public void setCheckExpiry(boolean checkExpiry) {
 		this.checkExpiry = checkExpiry;
 	}

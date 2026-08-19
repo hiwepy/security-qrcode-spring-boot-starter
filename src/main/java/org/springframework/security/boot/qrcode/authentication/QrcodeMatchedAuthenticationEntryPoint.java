@@ -44,11 +44,24 @@ public class QrcodeMatchedAuthenticationEntryPoint implements MatchedAuthenticat
 	
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
 	
+	/**
+	 * Determines whether supports.
+	 *
+	 * @param e the e
+	 * @return the result
+	 */
 	@Override
 	public boolean supports(AuthenticationException e) {
 		return SubjectUtils.isAssignableFrom(e.getClass(), AuthenticationQrcodeNotFoundException.class);
 	}
 
+	/**
+	 * commence.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @param e the e
+	 */
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
 			throws IOException, ServletException {

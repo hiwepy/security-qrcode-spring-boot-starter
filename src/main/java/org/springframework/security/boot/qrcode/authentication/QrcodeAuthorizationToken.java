@@ -34,12 +34,23 @@ public class QrcodeAuthorizationToken extends AbstractAuthenticationToken {
     private final Object principal;
     private Object credentials;
 
+    /**
+     * Constructs a new qrcode authorization token instance.
+     *
+     * @param principal the principal
+     */
     public QrcodeAuthorizationToken(Object principal) {
         super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
         setAuthenticated(false);
     }
     
+    /**
+     * Constructs a new qrcode authorization token instance.
+     *
+     * @param principal the principal
+     * @param credentials the credentials
+     */
     public QrcodeAuthorizationToken(Object principal,  Object credentials) {
         super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
@@ -47,6 +58,13 @@ public class QrcodeAuthorizationToken extends AbstractAuthenticationToken {
         setAuthenticated(false);
     }
     
+    /**
+     * Constructs a new qrcode authorization token instance.
+     *
+     * @param principal the principal
+     * @param credentials the credentials
+     * @param authorities the authorities
+     */
     public QrcodeAuthorizationToken(Object principal,  Object credentials, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
@@ -57,14 +75,30 @@ public class QrcodeAuthorizationToken extends AbstractAuthenticationToken {
     // ~ Methods
     // ========================================================================================================
 
+    /**
+     * Returns the credentials.
+     *
+     * @return the credentials
+     */
     public Object getCredentials() {
         return this.credentials;
     }
 
+    /**
+     * Returns the principal.
+     *
+     * @return the principal
+     */
     public Object getPrincipal() {
         return this.principal;
     }
 
+    /**
+     * Sets the authenticated.
+     *
+     * @param isAuthenticated the is authenticated
+     * @throws IllegalArgumentException if an error occurs
+     */
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         if (isAuthenticated) {
             throw new IllegalArgumentException(
@@ -74,6 +108,10 @@ public class QrcodeAuthorizationToken extends AbstractAuthenticationToken {
         super.setAuthenticated(false);
     }
 
+    /**
+     * erase Credentials.
+     *
+     */
     @Override
     public void eraseCredentials() {
         super.eraseCredentials();

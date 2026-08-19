@@ -57,16 +57,37 @@ public class QrcodeAuthorizationSuccessHandler implements MatchedAuthenticationS
 	private final StringRedisTemplate stringRedisTemplate;
 	private boolean checkExpiry = false;
 	
+	/**
+	 * Constructs a new qrcode authorization success handler instance.
+	 *
+	 * @param payloadRepository the payload repository
+	 * @param stringRedisTemplate the string redis template
+	 */
 	public QrcodeAuthorizationSuccessHandler(JwtPayloadRepository payloadRepository, StringRedisTemplate stringRedisTemplate) {
 		this.payloadRepository = payloadRepository;
 		this.stringRedisTemplate = stringRedisTemplate;
 	}
 	
+	/**
+	 * Determines whether supports.
+	 *
+	 * @param authentication the authentication
+	 * @return the result
+	 */
 	@Override
 	public boolean supports(Authentication authentication) {
 		return SubjectUtils.isAssignableFrom(authentication.getClass(), QrcodeAuthorizationToken.class);
 	}
 	
+	/**
+	 * on Authentication Success.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @param authentication the authentication
+	 * @throws IOException if an error occurs
+	 * @throws ServletException if an error occurs
+	 */
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
@@ -108,19 +129,39 @@ public class QrcodeAuthorizationSuccessHandler implements MatchedAuthenticationS
 	}
 
 
+	/**
+	 * Returns the payload repository.
+	 *
+	 * @return the payload repository
+	 */
 	public JwtPayloadRepository getPayloadRepository() {
 		return payloadRepository;
 	}
 
+	/**
+	 * Returns the string redis template.
+	 *
+	 * @return the string redis template
+	 */
 	public StringRedisTemplate getStringRedisTemplate() {
 		return stringRedisTemplate;
 	}
 	
 
+	/**
+	 * Returns the check expiry.
+	 *
+	 * @return the check expiry
+	 */
 	public boolean isCheckExpiry() {
 		return checkExpiry;
 	}
 
+	/**
+	 * Sets the check expiry.
+	 *
+	 * @param checkExpiry the check expiry
+	 */
 	public void setCheckExpiry(boolean checkExpiry) {
 		this.checkExpiry = checkExpiry;
 	}

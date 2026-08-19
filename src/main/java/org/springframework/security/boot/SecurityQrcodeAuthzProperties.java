@@ -22,6 +22,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.boot.biz.property.SecurityAuthcProperties;
 import org.springframework.security.boot.qrcode.authentication.QrcodeAuthorizationProcessingFilter;
 
+/**
+ * <p>Configuration properties.</p>
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
+ */
 @ConfigurationProperties(prefix = SecurityQrcodeAuthzProperties.PREFIX)
 @Getter
 @Setter

@@ -39,6 +39,7 @@ import java.io.IOException;
 /**
  * 二维码扫码登录授权 (authorization)过滤器
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationProcessingFilter {
 
@@ -57,10 +58,21 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 
+	/**
+	 * Constructs a new qrcode authorization processing filter instance.
+	 *
+	 */
 	public QrcodeAuthorizationProcessingFilter() {
 		super(PathPatternRequestMatcher.pathPattern("/login/qrcode"));
 	}
 
+	/**
+	 * do Filter.
+	 *
+	 * @param req the req
+	 * @param res the res
+	 * @param chain the chain
+	 */
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
@@ -107,6 +119,11 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 
 	}
 
+	/**
+	 * Sets the session authentication strategy.
+	 *
+	 * @param sessionStrategy the session strategy
+	 */
 	@Override
 	public void setSessionAuthenticationStrategy(
 			SessionAuthenticationStrategy sessionStrategy) {
@@ -114,6 +131,13 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 		this.sessionStrategy = sessionStrategy;
 	}
 
+	/**
+	 * do Attempt Authentication.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @return the result
+	 */
 	@Override
 	public Authentication doAttemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
@@ -166,10 +190,23 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 		authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 	}
 
+	/**
+	 * authentication Token.
+	 *
+	 * @param token the token
+	 * @param uuid the uuid
+	 * @return the result
+	 */
 	protected AbstractAuthenticationToken authenticationToken(String token, String uuid) {
 		return new QrcodeAuthorizationToken( token, uuid );
 	}
 
+	/**
+	 * obtain Token.
+	 *
+	 * @param request the request
+	 * @return the result
+	 */
 	protected String obtainToken(HttpServletRequest request) {
 
 		// 从header中获取token
@@ -194,46 +231,102 @@ public class QrcodeAuthorizationProcessingFilter extends PostOnlyAuthenticationP
 		return token;
 	}
 
+	/**
+	 * obtain UUID.
+	 *
+	 * @param request the request
+	 * @return the result
+	 */
 	protected String obtainUuid(HttpServletRequest request) {
         return request.getParameter(getQrcodeParameter());
     }
 
+	/**
+	 * Returns the authorization header name.
+	 *
+	 * @return the authorization header name
+	 */
 	public String getAuthorizationHeaderName() {
 		return authorizationHeaderName;
 	}
 
+	/**
+	 * Sets the authorization header name.
+	 *
+	 * @param authorizationHeaderName the authorization header name
+	 */
 	public void setAuthorizationHeaderName(String authorizationHeaderName) {
 		this.authorizationHeaderName = authorizationHeaderName;
 	}
 
+	/**
+	 * Returns the authorization param name.
+	 *
+	 * @return the authorization param name
+	 */
 	public String getAuthorizationParamName() {
 		return authorizationParamName;
 	}
 
+	/**
+	 * Sets the authorization param name.
+	 *
+	 * @param authorizationParamName the authorization param name
+	 */
 	public void setAuthorizationParamName(String authorizationParamName) {
 		this.authorizationParamName = authorizationParamName;
 	}
 
+	/**
+	 * Returns the authorization cookie name.
+	 *
+	 * @return the authorization cookie name
+	 */
 	public String getAuthorizationCookieName() {
 		return authorizationCookieName;
 	}
 
+	/**
+	 * Sets the authorization cookie name.
+	 *
+	 * @param authorizationCookieName the authorization cookie name
+	 */
 	public void setAuthorizationCookieName(String authorizationCookieName) {
 		this.authorizationCookieName = authorizationCookieName;
 	}
 
+	/**
+	 * Returns the qrcode parameter.
+	 *
+	 * @return the qrcode parameter
+	 */
 	public String getQrcodeParameter() {
 		return qrcodeParameter;
 	}
 
+	/**
+	 * Sets the qrcode parameter.
+	 *
+	 * @param qrcodeParameter the qrcode parameter
+	 */
 	public void setQrcodeParameter(String qrcodeParameter) {
 		this.qrcodeParameter = qrcodeParameter;
 	}
 
+	/**
+	 * Returns the session strategy.
+	 *
+	 * @return the session strategy
+	 */
 	public SessionAuthenticationStrategy getSessionStrategy() {
 		return sessionStrategy;
 	}
 
+	/**
+	 * Sets the session strategy.
+	 *
+	 * @param sessionStrategy the session strategy
+	 */
 	public void setSessionStrategy(SessionAuthenticationStrategy sessionStrategy) {
 		this.sessionStrategy = sessionStrategy;
 	}

@@ -44,8 +44,21 @@ import java.util.stream.Collectors;
 @ConditionalOnProperty(prefix = SecurityQrcodeProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({ SecurityQrcodeProperties.class, SecurityQrcodeAuthzProperties.class,
 	SecurityBizProperties.class })
+/**
+ * <p>Configuration properties.</p>
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
+ */
 public class SecurityQrcodeFilterConfiguration {
  
+	/**
+	 * qrcode Authorization Provider.
+	 *
+	 * @param userDetailsServiceProvider the user details service provider
+	 * @param payloadRepositoryProvider the payload repository provider
+	 * @return the result
+	 */
 	@Bean
 	public QrcodeAuthorizationProvider qrcodeAuthorizationProvider(ObjectProvider<UserDetailsServiceAdapter> userDetailsServiceProvider,
 																   ObjectProvider<JwtPayloadRepository> payloadRepositoryProvider) {
@@ -99,6 +112,12 @@ public class SecurityQrcodeFilterConfiguration {
    			
 		}
 
+		/**
+		 * authentication Processing Filter.
+		 *
+		 * @return the result
+		 * @throws Exception if an error occurs
+		 */
 		public QrcodeAuthorizationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
 			QrcodeAuthorizationProcessingFilter authenticationFilter = new QrcodeAuthorizationProcessingFilter();
@@ -125,6 +144,13 @@ public class SecurityQrcodeFilterConfiguration {
 	        return authenticationFilter;
 	    }
 
+		/**
+		 * ding Talk Ma Security Filter Chain.
+		 *
+		 * @param http the http
+		 * @return the result
+		 * @throws Exception if an error occurs
+		 */
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 		public SecurityFilterChain dingTalkMaSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -146,6 +172,11 @@ public class SecurityQrcodeFilterConfiguration {
 			return http.build();
 		}
 
+		/**
+		 * customize.
+		 *
+		 * @param web the web
+		 */
 		@Override
 		public void customize(WebSecurity web) {
 			super.customize(web);

@@ -36,6 +36,12 @@ public class SecurityQrcodeEndpoint {
     private final StringRedisTemplate stringRedisTemplate;
     private final ZxingQrCodeTemplate qrcodeTemplate;
 	
+	/**
+	 * Constructs a new security qrcode endpoint instance.
+	 *
+	 * @param stringRedisTemplate the string redis template
+	 * @param qrcodeTemplate the qrcode template
+	 */
 	public SecurityQrcodeEndpoint(StringRedisTemplate stringRedisTemplate, ZxingQrCodeTemplate qrcodeTemplate) {
 		super();
 		this.stringRedisTemplate = stringRedisTemplate;
@@ -76,6 +82,12 @@ public class SecurityQrcodeEndpoint {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "uuid", required = true, value = "二维码对应的UUID", dataType = "String"),
 	})
+	/**
+	 * bind.
+	 *
+	 * @param uuid the uuid
+	 * @return the result
+	 */
 	@GetMapping("bind")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> bind(@RequestParam String uuid) {
@@ -126,10 +138,20 @@ public class SecurityQrcodeEndpoint {
 		}
 	}
 	
+	/**
+	 * Returns the string redis template.
+	 *
+	 * @return the string redis template
+	 */
 	public StringRedisTemplate getStringRedisTemplate() {
 		return stringRedisTemplate;
 	}
 
+	/**
+	 * Returns the qrcode template.
+	 *
+	 * @return the qrcode template
+	 */
 	public ZxingQrCodeTemplate getQrcodeTemplate() {
 		return qrcodeTemplate;
 	}
